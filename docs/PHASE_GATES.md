@@ -1,0 +1,66 @@
+# Sprint Gates
+
+## Gate 0 — CMU Prerequisites
+
+Pass `PREREQUISITE_DIAGNOSTIC.md`.
+
+---
+
+## Gate 1 — Day 1 Agent / Tool Loop
+
+Without notes:
+
+1. Define agent, environment, state/observation, action, and goal/termination.
+2. Draw the tiny loop.
+3. State what the model may propose vs what the application owns.
+4. Trace one tool call with concrete values.
+5. Explain invalid tool input behavior.
+6. Explain max-step termination.
+7. On a changed domain, define one read-only tool contract.
+
+**Pass:** mechanism is correct without framework vocabulary carrying the explanation.
+
+---
+
+## Gate 2 — Day 2 Memory / RAG
+
+Without notes:
+
+1. Classify context, working state, authoritative state, memory, evidence, inference.
+2. Draw the RAG pipeline.
+3. Explain embeddings/vectors conceptually.
+4. Explain how chunking/top-k can affect retrieval.
+5. Distinguish retrieval failure from generation failure.
+6. Explain why retrieved content is not a permission grant.
+7. Complete one changed vector/retrieval example.
+
+---
+
+## Gate 3 — Day 3 Reasoning / Multi-Agent / Evaluation
+
+Without notes:
+
+1. Explain why an explicit planning/decomposition strategy changes control flow.
+2. Name at least two costs of extra reasoning steps/branches.
+3. Define a two-agent handoff contract.
+4. Explain one multi-agent failure mode not present in the single-agent baseline.
+5. Define success/failure for an unseen agent scenario before it runs.
+6. Identify what an execution trace would need to diagnose a failure.
+7. Explain sandboxing/credentialing at the authority level.
+
+---
+
+## Final Promotion Rule
+
+The learner does not need perfect vocabulary.
+
+Promote to CMU readiness when they can:
+
+```text
+TRACE the tiny implementation
+EXPLAIN all core concepts
+TRANSFER them to one unseen example
+DEFEND one architecture/evaluation decision
+```
+
+If the learner cannot do one of those, record it as a CMU watch item rather than extending the bridge indefinitely.

@@ -14,6 +14,17 @@ For the tiny Day 1 agent, define:
 4. repeated-action / max-step pressure;
 5. unsafe or out-of-authority request.
 
+Scenario 3 is not one scenario once a tool reaches an external service. Split it:
+
+```text
+3a. network/transport failure   — no usable response arrived
+3b. HTTP/API error              — a response arrived, non-success status
+3c. response shape/data failure — success status, body unusable
+```
+
+Both failures demonstrated on Day 1 already supply 3a and 3b; 3c can be defined
+on paper from the same tool contract. This costs no additional implementation.
+
 ## For Every Scenario Record Before Execution
 
 ```text
@@ -51,14 +62,21 @@ Use simple categories:
 
 ```text
 model decision
-validation
+tool-input validation
 tool/environment
+network/transport
+HTTP/API error
+response shape/data
 termination
 state/authority
 safety/permission
-external/provider
 application bug
 ```
+
+The three external classes replace a single "external/provider" bucket on
+purpose. "The API failed" does not tell you whether a request left the machine,
+whether the service answered, or whether your own parsing was wrong — and those
+three call for different fixes.
 
 ## What Evaluation Does Not Prove
 

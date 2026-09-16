@@ -87,6 +87,131 @@ Always define a bound such as a maximum number of steps for a learning implement
 
 ---
 
+## C2. External API / HTTP Tool Fundamentals — CMU Agentic AI Program (external APIs/tools) + CMU 15-213 systems/networking
+
+Section C describes any action the software can execute. A tool that calls an external service is the **same contract**, plus one new fact: part of the work happens on a machine you do not own, reached over a network that can fail.
+
+Do this only after the deterministic tool loop in section C is understood. Networking is a second mechanism, not a replacement for the first.
+
+### What an API is in this architecture
+
+An API is a published boundary that another program agrees to answer across. In an agent, that boundary sits **inside one tool**, behind the tool contract. The agent does not talk to the API; the application's tool does.
+
+```text
+client   = your application/tool — sends the request
+server   = the external service — sends the response
+request  = what you send (method, URL, parameters)
+response = what comes back (status, body)
+```
+
+`HTTP` is the protocol both sides agree on. `GET` is the read-only method: it asks for a representation of a resource and is not supposed to change anything on the server. Choosing `GET` is how the tool's "allowed side effects = none" promise reaches across the boundary.
+
+### Endpoint anatomy
+
+```text
+https://api.example.org/us/15213?units=metric
+\___/   \_____________/\_______/\___________/
+scheme        host        path      query
+```
+
+An **endpoint** is the address of a resource. A **path parameter** is part of that address (`/us/15213` — "the US postal code 15213"): it selects *which* thing. A **query parameter** (`?units=metric`) modifies or filters the request: it says *how* you want it. Both come from your input; only one is part of the resource's identity.
+
+### Status codes
+
+The status code is the server's verdict on the request. It is separate from whether the body contains what you wanted.
+
+```text
+2xx  success
+4xx  the request was wrong (bad address, not found, not permitted)
+5xx  the server failed while handling a request that may have been fine
+```
+
+`200 OK` and `404 Not Found` are both complete, successful *conversations*. Only one of them carries the data you asked for. A tool that ignores the status and parses the body anyway will hand an error page to the agent as if it were data.
+
+### JSON response bodies and parsing
+
+Most read APIs answer with JSON: text in a structured format that your language can turn into dictionaries, lists, strings, and numbers. Two separate things can go wrong:
+
+```text
+parsing   — the text is not valid JSON at all
+shape     — it parsed fine, but the keys/fields you needed are not there
+```
+
+Valid JSON is not a promise of the right JSON.
+
+### Timeout
+
+A request with no timeout can hang for as long as the network lets it. An explicit timeout converts "waiting forever" into "a failure you can handle," which is what makes the loop's step bound meaningful. A tool without a timeout has an unbounded step.
+
+### The full path, both directions
+
+```text
+agent decision
+→ proposed tool call
+→ application validates the input          (nothing has left the machine yet)
+→ tool builds the HTTP request
+→ network
+→ external service
+→ HTTP response (status + body)
+→ tool checks the status
+→ tool parses the body
+→ tool validates the shape of the parsed data
+→ bounded tool result
+→ observation recorded in loop state
+→ next agent decision
+```
+
+You should be able to draw this from memory and say, at every arrow, what crosses it and who owns the decision at that point.
+
+### Two validations, not one
+
+```text
+BEFORE the request
+  is the input well-formed and allowed?
+  a bad input fails here, and no request is sent at all
+
+AFTER the response
+  did the status indicate success?
+  did the body parse?
+  are the fields I need present and of the expected kind?
+  is the result small enough to hand back as an observation?
+```
+
+Skipping the first sends malformed or unauthorized requests outward. Skipping the second lets a stranger's output flow straight into the agent's context.
+
+### Five distinct failure kinds
+
+These fail in different places, produce different evidence, and call for different responses. Being able to tell them apart is the point of the exercise.
+
+| Failure kind | Where it happens | Did a request leave? | Typical evidence |
+|---|---|---|---|
+| tool-input validation | application, before the call | no | rejected input + reason |
+| network/transport | between client and server | yes, no usable answer | timeout, DNS failure, refused connection |
+| HTTP/API error | server answered | yes | non-success status code |
+| response shape/data | client, after the answer | yes | parse error, or missing/unexpected fields |
+| agent-loop/control-flow | the loop around the tool | possibly many | step count, repeated identical actions, termination reason |
+
+"The tool failed" is not a diagnosis. Naming which of these five it was is.
+
+### Why external data is evidence, not authority
+
+A response is a **claim made by someone else's program at one moment in time**. It is an observation the loop records, exactly like the deterministic tool's result — not authoritative application state, and never a grant of new permission. It can be wrong, stale, truncated, or hostile, and it is outside your control.
+
+The chain of ownership does not change when a network appears in the middle of it:
+
+```text
+the model               proposes an action
+the application         validates and authorizes it
+the tool                performs the external interaction, bounded
+the external service    returns data
+the tool/application    interprets and bounds the result
+the loop                decides what happens next
+```
+
+The external service is the only participant here you do not own. That is precisely why it sits behind a tool boundary instead of in front of one.
+
+---
+
 ## D. State and Memory Fundamentals — CMU Module 2 + CS188 state representation
 
 Do not use “memory” for every piece of retained information.

@@ -36,6 +36,7 @@ It targets the minimum useful pre-understanding:
 |---|---|---|
 | LLM foundations | model call is probabilistic external behavior; context/request/response; structured application contract | deeper model/provider techniques |
 | Agent architecture | state, action/tool, control loop, stop condition, authority | richer agent patterns |
+| External tools/APIs | one tool's HTTP boundary: validated input, GET, timeout, status, parsed body, response validation, bounded observation, and the failure kinds that boundary makes distinguishable | integration breadth, provider SDKs, production API engineering |
 | Memory | context vs durable state vs non-authoritative memory | advanced memory strategies |
 | RAG | document → representation → retrieve → context → answer; retrieval vs generation failure | framework/vector DB implementation depth |
 | Structured reasoning | planning/decomposition changes control flow and budget | Tree-of-Thought implementation depth |
@@ -70,4 +71,8 @@ program
 → application interpretation
 ```
 
-Do not turn the sprint into a systems course.
+Day 1's single external API tool is where this stops being a metaphor. One GET
+request is enough to make the boundary real.
+
+Do not turn the sprint into a systems course, and do not turn the API exercise
+into an API course. One endpoint, one request, one set of failure kinds.

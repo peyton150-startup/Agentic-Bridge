@@ -25,6 +25,7 @@ Score 0–2.
 13. safety/permission boundary
 14. execution trace / failure diagnosis
 15. architecture explanation without framework magic
+16. external API/tool boundary: request/response path and the five failure kinds
 
 ## Readiness Standard
 
@@ -33,6 +34,7 @@ Recommended:
 - no `0` in categories 1–8;
 - no more than two `0`s overall;
 - score `2` on agent/tool loop, RAG pipeline, evaluation, and architecture explanation;
+- at least `1` on category 16, and a `0` there recorded as a CMU watch item rather than a reason to extend the sprint;
 - any remaining weakness is explicitly written into `learning/LEARNING_LEDGER.md` as a CMU watch item.
 
 This is a readiness test, not a claim of mastery.

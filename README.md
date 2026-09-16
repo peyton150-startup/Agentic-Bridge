@@ -17,12 +17,13 @@ Choose one mode.
 ### 3-day core
 
 ```text
-Day 1 — prerequisites + agents + LLM boundary + tool loop
+Day 1 — prerequisites + agents + LLM boundary + tool loop + external API boundary
 Day 2 — memory + RAG/vector retrieval fundamentals
 Day 3 — reasoning + multi-agent + evaluation/safety + final readiness gate
 ```
 
-Target: roughly **5–6 focused hours per day**.
+Target: roughly **5–6 focused hours per day**, except Day 1, which runs to
+about **6–6.5 hours** because it carries the sprint's only implementation work.
 
 ### 4-day preferred
 
@@ -42,6 +43,7 @@ Before CMU you do **not** need to:
 - build a polished product;
 - learn every LangGraph or CrewAI API;
 - deploy a production vector database;
+- build an API, an API server, or a reusable HTTP client;
 - master Tree-of-Thought algorithms;
 - build a sophisticated multi-agent system;
 - reproduce CMU labs;
@@ -78,6 +80,8 @@ Before starting CMU, you should be able to explain from memory:
 - what an LLM contributes and what it does **not** own;
 - how a model/tool control loop starts, continues, and terminates;
 - why tool output and model output are inputs that application code must interpret;
+- what happens when a tool reaches an external HTTP API — validated input, request, status, parsed body, response validation, bounded result — and who owns each step;
+- how to tell a tool-input validation failure, a network/transport failure, an HTTP/API error, a response-shape failure, and an agent-loop failure apart;
 - the difference between context, memory, authoritative state, and retrieved evidence;
 - the RAG pipeline from documents to retrieval to generated answer;
 - why retrieval failure and generation failure are different;

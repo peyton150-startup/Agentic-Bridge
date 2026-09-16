@@ -28,6 +28,9 @@ FAILURE:
 EVIDENCE:
 ```
 
+When `EXTERNAL DEPENDENCY` is not "none", `FAILURE` is not one entry. Name each
+failure kind separately and say, for each, whether a request left the machine.
+
 ### 3. Prediction
 
 Given one concrete input, predict the output/state transition before execution.
@@ -63,6 +66,9 @@ If the learner says:
 “the vector database does it”
 “the agent decides”
 “the framework stores memory”
+“the API just returns the data”
+“the HTTP library handles errors”
+“the agent calls the API”
 ```
 
 ask what concrete state/control/data operation is being hidden behind that phrase.

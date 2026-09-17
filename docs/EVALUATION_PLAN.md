@@ -14,6 +14,12 @@ For the tiny Day 1 agent, define:
 4. repeated-action / max-step pressure;
 5. unsafe or out-of-authority request.
 
+### If the decision model is TypeSafe (optional Patch 5)
+
+- **Scenario 2:** a Choice cannot return an option outside its set, so scenario 2 *looks* solved. It is not: arguments without a question keep defaults, and free-text/number/date arguments are never checked by the model. Keep validation in code and design scenario 2 around those arguments.
+- **Scenario 5:** a Noul guardrail ("Does this request ask for an action outside the agent's authority?") is a reasonable extra check, but TypeSafe's own limitations page says adversarial content can influence it. The guardrail informs the decision; application authority rules still decide. Include one scenario where the request text tries to talk the guardrail into "no".
+- **Low confidence:** define before running what happens below a threshold (stop, escalate, or ask). The threshold is a policy constant you chose, not a vendor default.
+
 ## For Every Scenario Record Before Execution
 
 ```text
@@ -43,6 +49,8 @@ failure class
 
 If a live LLM is used, optionally add latency and token/cost evidence if it is readily available.
 
+If TypeSafe is used, also record the decision's `confidence` and whether a low-confidence rule fired.
+
 Do not spend the sprint building dashboards.
 
 ## Failure Classes
@@ -57,6 +65,7 @@ termination
 state/authority
 safety/permission
 external/provider
+low confidence (only if a confidence-gated rule exists)
 application bug
 ```
 

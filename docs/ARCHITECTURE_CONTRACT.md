@@ -29,6 +29,8 @@ Every run has an explicit maximum-step bound and a defined termination reason.
 
 The deterministic model-decision stub exists so loop/state behavior can be tested independently of model variability.
 
+**Swap test:** replacing the stub with a live decision model (for example the optional TypeSafe Patch 5 in `IMPLEMENTATION_PLAN.md`) should change only the decision function. Any required change to state, loop, validation, tool, or trace is evidence that this rule was violated.
+
 ## 6. Evidence Is Part of the Design
 
 The trace must allow the learner to reconstruct why each step occurred.

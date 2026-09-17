@@ -97,6 +97,32 @@ The learner first states what behavior is provider-specific and what application
 
 Do not redesign the core around the provider.
 
+#### Candidate provider: TypeSafe (optional, not curriculum)
+
+TypeSafe returns decisions, not text, so it can replace only the **model-decision function**:
+
+```text
+Choice: final answer | call <tool name>
+optional Choice per tool argument (closed sets only)
+```
+
+Before swapping, the learner predicts:
+
+```text
+what changes:        the decision function body
+what must not change: AgentState, loop, validation, tool, trace
+what code still owns: the final answer text, every free-text/number/date argument
+```
+
+Traps to find from evidence:
+
+- an argument with no question silently keeps its default, so validation is still required;
+- `confidence` is a new input — decide in code what happens when it is low (for example, stop with termination reason `low_confidence`).
+
+If the swap forces changes outside the decision function, the contract in `ARCHITECTURE_CONTRACT.md` §5 was leaking. Record that as the finding.
+
+SDK syntax lives in `SOURCES.md` → Non-Curriculum Tooling Reference and is not a lesson.
+
 ## Do Not Build During the Core Sprint
 
 - database memory;

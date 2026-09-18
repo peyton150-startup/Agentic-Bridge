@@ -135,9 +135,35 @@ If `ONE LINE/BLOCK I COULD NOT EXPLAIN` is non-empty, no additional implementati
 
 **Corrected mental model:** list membership checks every item (work grows with size); set/dict compute where the item would be and look once (work ~constant). Uniqueness is a side effect.
 
-**Resume here:** B final item — robot hallway rooms 1–4, start 1, goal 4, actions left/right: state, actions, goal test, min moves. Then Section C (LLM fundamentals), Section D (AI/agent fundamentals), First Session Steps 2–3.
+**Hallway state-space (rooms 1–4):** said "move left to room 4" (direction + jump). Traced 2,3,4 → 3 moves. Multiple choice: state = current room, actions = left/right, goal test = "is my room 4?" all correct. Explained why "have I made 3 moves?" fails (start elsewhere → overshoot; bump → ends in room 3). Linked: max-steps is a budget, not a goal test.
 
-**Promotion:** continue (B not yet scored)
+**Result:** Section B PASS.
+
+**Promotion:** continue
+
+### 2026-09-18 / Day 0 — Diagnostic C (LLM Fundamentals)
+
+**Nondeterminism:** correct ("probabilistic"); mechanism (sampling next token) explained. Bank charge: correct — needs same result every time.
+
+**Authority:** "don't charge immediately; confirm, check account, check balance." Added: ownership/authority check. Learned terms authoritative state vs authority. **Misconception fixed:** said "the LLM has to check" → corrected to "code checks; LLM proposes."
+
+**Structured output:** misconception — thought structure removes probabilistic text. Corrected: structure fixes shape (code reads `answer["amount"]`), not content. Then correct: `{"account":"4471","amount":500}` can still occur; caught by authoritative-state checks, not format.
+
+**Long context:** cost + latency correct; proposed summarize, recent window, search-history (→ retrieval/RAG preview; corrected "like a set" to relevance ranking).
+
+**Result:** Section C PASS (two corrected misconceptions: who checks; what structure guarantees).
+
+### 2026-09-18 / Day 0 — Diagnostic D (AI/Agent Fundamentals), in progress
+
+**Cold (robot vacuum six fields):** goal/env/termination "not sure"; state "context and the internet"; actions "set of actions we code to allow" (correct); transition "state and context". Multiple choice: picked nearly all options — "I have no way to distinguish them."
+
+**Precise weakness:** cannot yet tell goal / environment / state / transition / termination apart; defaults to LLM vocabulary (context, internet) for non-LLM agents.
+
+**Remediation given:** one question per field (grade it? where does it operate? what does it know now? what can it do? what changes after? am I done?) + filter "is this even about a vacuum?". Retry: state → B correct with reasoning; environment → chose C (vacuum's code) — wrong; said "a and b are about where it is", which is the definition of environment. Explained: environment = world outside the agent; code is inside.
+
+**Resume here:** retry goal, transition, termination for the vacuum with the two filters; then a fresh transfer (different agent) cold; then one sentence "why still need all six after adding an LLM". Then First Session Step 3 (runtime drawing) and promotion to Day 1.
+
+**Promotion:** remediate (in progress) — candidate CMU watch item if it doesn't stick on transfer.
 
 ---
 

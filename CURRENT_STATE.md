@@ -2,7 +2,9 @@
 
 ## Lifecycle
 
-**Current stage:** Day 0 — prerequisite/readiness diagnostic
+**Current stage:** Day 1 — agent foundations and tool loop
+
+Day 0 diagnostic passed 2026-09-18 (see `learning/LEARNING_LEDGER.md`).
 
 ## Time Constraint
 

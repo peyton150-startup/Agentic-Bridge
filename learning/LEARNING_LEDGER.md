@@ -161,9 +161,49 @@ If `ONE LINE/BLOCK I COULD NOT EXPLAIN` is non-empty, no additional implementati
 
 **Remediation given:** one question per field (grade it? where does it operate? what does it know now? what can it do? what changes after? am I done?) + filter "is this even about a vacuum?". Retry: state → B correct with reasoning; environment → chose C (vacuum's code) — wrong; said "a and b are about where it is", which is the definition of environment. Explained: environment = world outside the agent; code is inside.
 
-**Resume here:** retry goal, transition, termination for the vacuum with the two filters; then a fresh transfer (different agent) cold; then one sentence "why still need all six after adding an LLM". Then First Session Step 3 (runtime drawing) and promotion to Day 1.
+**Retry with filters:** vacuum goal (a), transition (a), termination (b) all correct with reasons ("time limits or counts instead of a reason to stop").
 
-**Promotion:** remediate (in progress) — candidate CMU watch item if it doesn't stick on transfer.
+**Cold transfer — smart thermostat, no options:** all six fields correct (goal 70°, env house/rooms, state 55° sensor reading, actions heater on/off, transition temp rises, termination "all rooms at 70?"). Taught: task agents vs continuous agents.
+
+**LLM role ("make it cozy"):** correctly said LLM turns "cozy" into a target (65°). **Slip:** said "LLM stops the heater" → corrected: LLM proposes target; code validates range, updates state, runs same loop. On 150°: "checked against authoritative state so it doesn't hallucinate a crazy number" — correct; refined: reject regardless of cause.
+
+**Result:** Section D PASS (large weakness → remediated → cold transfer correct).
+
+### 2026-09-18 / Day 0 — First Session Step 3: runtime drawing (thermostat + LLM)
+
+**Per-arrow table:** LLM→code proposal/out-of-range correct. Misconceptions fixed: (1) "deterministic code → not much can fail" → deterministic ≠ correct (55–850 typo fails every time); (2) "state tells heater" → state is data, code acts; (3) sensor arrow owner/failure unsure → observations can be wrong.
+
+**Evidence:** stuck sensor → heater runs forever (correct). Log pattern: heater ON every step, reading unchanged → flag. Proposed rule with domain threshold ("8° takes ~2h, so flag after 1h no change"). Named: execution monitoring, stall detection, bounded loop.
+
+**Result:** Step 3 complete.
+
+## Day 0 Decision — 2026-09-18
+
+Diagnostic A–D all PASS (each with remediation; final transfer items cold-correct). **Promote to Day 1.**
+
+Recurring pattern to watch: under pressure, reverts to "the LLM does/checks X" — re-test authority split in Day 1 quiz Q2/Q3 on a new domain.
+
+### 2026-09-18 / Day 1 — Reading: CS188 1.1 and 1.2
+
+**1.1:** thermostat = reflex agent (correct, with reason). PEAS 3/4 — mapped P to state; corrected P = performance measure = goal.
+
+**1.2 main ideas discussed:**
+- Search problem parts + action cost: walk (3) vs teleport (5) correct; bump case arithmetic slip (4, not 5).
+- World vs search state: "get to (5,3)" kept ghosts despite harmless assumption → lesson "search state depends on the problem"; "eat all dots" → position + dots eaten, correct.
+- Counting states: cold answered 10 × 3 = 30 (added dots instead of ×2 each); asked whether this was combinations/permutations → taught multiplication rule / light switches; then 8, 80, "a lot bigger" correct (~10 billion for 30 dots).
+- Graph vs tree: tree can loop forever (left/right) correct → link to max-step bound.
+
+### 2026-09-18 / Day 1 — Fundamentals C: tool contract
+
+**lookup_word contract:** proposer/allowed/no state change correct. Input first said "a document" → corrected to the `word` string. Validation: accepted "12345"; believed `"1245"` is not a string → corrected (quotes make a string); rule set to "letters only, 1–30 chars".
+
+**Authority slip (recurring, 3rd time):** "the LLM would output not found" / "the model reads the input and starts the workflow". Resolved using learner's own traced Q5 loop: loop calls decide(); decide can't call act(); loop runs first; input triggers code. Learner restated: **"code starts it and calls the model; model returns a proposal; code validates, runs tools, continues or stops."** Legit nuance kept: model may write the final user-facing message; code orchestrates.
+
+### 2026-09-18 / Day 1 Quiz — in progress
+
+**Q1** (`{"tool":"lookup_word","word":"12345"}` — should it run?): answered **yes** ("proposed by model, correct tool, valid string") — **incorrect** under the agreed contract (letters only). Same pattern: treats well-formed model proposal as sufficient. Brief correction given; **resume here** with full discussion, then Q2–Q5 + transfer.
+
+**Promotion:** in progress — authority/validation is the live CMU watch-item candidate.
 
 ---
 

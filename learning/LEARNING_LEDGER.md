@@ -109,13 +109,35 @@ If `ONE LINE/BLOCK I COULD NOT EXPLAIN` is non-empty, no additional implementati
 
 **Syntax gap found:** confused by `{}` vs `[]`. Rules taught: brackets on their own = build (`{}` dict, `[]` list); name right before `[...]` = reach in (always square). Type is set by the most recent `=` assignment of that name. Learner restated correctly.
 
-**Q3 — loop with break:** understood `break` correctly; predicted 2 (counted searches, not passes). Answer is 3. Pass-by-pass trace table given, **not yet completed** — resume here.
+**Q3 — loop with break:** understood `break`; predicted 2 (counted searches, not passes). Completed trace table → 3, explained "if comes after steps + 1". Correct after hint.
 
-**Precise weakness:** mutation (change the box) vs rebinding (move the name); order of statements inside a loop body.
+**Q4 — try/except KeyError:** cold content right, order wrong (put `ok` after the returned value) and added a `search:` prefix. Explained after prompt: `print` waits for `run` to finish; `run` prints during execution. Partial. (Tutor error: said four lines, there were three.)
 
-**Still to do:** finish Q3 trace → Q4 exceptions → Q5 composing functions → one cold mutation-vs-rebinding variant. Then Diagnostic B–D, then First Session Steps 2 (vacuum six fields) and 3 (runtime drawing).
+**Q5 — composed decide/act/loop:** correct cold, `['search','result','search','result','stop']`, with an accurate full narrated trace.
 
-**Promotion:** remediate (in progress)
+**Cold transfer — mutation vs rebinding with `memory + [...]`:** correct cold (`['a','b']`, `['a','b','extra','more']`). Unsure whether `+` includes old items; resolved with "right side runs first on the old box".
+
+**Precise weakness (resolved):** mutation vs rebinding; statement order inside a loop body; when a nested call's prints happen.
+
+**Result:** Section A PASS (one small weakness → remediated → fresh variant correct cold).
+
+**Still to do:** Diagnostic B–D, then First Session Steps 2 (vacuum six fields) and 3 (runtime drawing).
+
+**Promotion:** continue
+
+### 2026-09-18 / Day 0 — Diagnostic B (Data Structures / Algorithms), in progress
+
+**Structure choice (5 jobs):** cold 3/5 — set, dict, queue correct; subtask-most-recent-first marked queue (→ stack), replay history marked stack (→ list; learner admitted picking stack because it was unused). Both corrected with reasons after small examples.
+
+**Representation cost (list vs set membership, 1M items):** initial misconception — set is faster "because no duplicates". Corrected via counting checks on a 5-item list ("has to go through every entry"). Then correct: list 1M → 1M checks, 10M → 10M checks; set ≈ constant. Toy locker hash taught (letter count, last digit); learner computed `"cmu.edu"` → locker 7 correctly; asked whether the recipe is fixed (yes, within a run). Learned set and dict share the mechanism (dict locker also holds value).
+
+**Precise weakness:** attributed set speed to uniqueness rather than direct-location lookup; growth-of-work reasoning needed concrete counting first.
+
+**Corrected mental model:** list membership checks every item (work grows with size); set/dict compute where the item would be and look once (work ~constant). Uniqueness is a side effect.
+
+**Resume here:** B final item — robot hallway rooms 1–4, start 1, goal 4, actions left/right: state, actions, goal test, min moves. Then Section C (LLM fundamentals), Section D (AI/agent fundamentals), First Session Steps 2–3.
+
+**Promotion:** continue (B not yet scored)
 
 ---
 

@@ -233,7 +233,66 @@ Recurring pattern to watch: under pressure, reverts to "the LLM does/checks X" �
 
 **Learner confusion (legit):** "I don't know what the overarching agent will do — am I supposed to decide?" → gave full agent picture: tiny dictionary helper; fake model stub; `lookup_word` over ~3 built-in words; loop; guardrails = validation rule + max steps; one full end-to-end example run. Learner decides only bounded choices (validation rule, max steps, dictionary words).
 
-**Resume here:** learner predicts initial AgentState values (request, step, max_steps=5, trace, stop_reason) → then state patch scope → Patch 1 code (~10–30 lines).
+**Initial values predicted:** request, step 0, trace [] correct; stop_reason described as eventual label → corrected to `None` while running.
+
+### Code Comprehension — Patch 1 (`code/tiny_agent.py`: `new_state`)
+
+```text
+PATCH PURPOSE: build the starting state dict for one run
+INPUT: request, max_steps
+OUTPUT: dict with request, step=0, max_steps, trace=[], stop_reason=None
+STATE READ: none
+STATE WRITTEN: none (returns a new dict)
+EXTERNAL DEPENDENCY: none
+STOP/ERROR PATH: new_state("hi") → TypeError missing max_steps (predicted "type error", correct)
+ONE LINE/BLOCK I COULD NOT EXPLAIN: initially tangled ("the request is in the loop"); restated correctly after line table
+MY OWN SMALL MODIFICATION: changed max_steps to 4
+RESULT: pass
+```
+
+### Code Comprehension — Patch 2 (`DICTIONARY`, `is_valid_word`, `lookup_word`)
+
+```text
+PATCH PURPOSE: one read-only tool + the check at the door
+INPUT: word
+OUTPUT: True/False (validation); {"found": True/False, ...} (tool)
+STATE READ: DICTIONARY
+STATE WRITTEN: none
+EXTERNAL DEPENDENCY: none
+STOP/ERROR PATH: is_valid_word(12345) → AttributeError ('int' has no isalpha) — predicted False, wrong; found a real bug
+ONE LINE/BLOCK I COULD NOT EXPLAIN: none; corrected "dictionary looks through entries" → direct locker lookup; and requires both
+MY OWN SMALL MODIFICATION: added "picasso"; learner wrote the fix `isinstance(word, str) and ...`
+RESULT: pass
+```
+
+Pre-patch predictions: 12345 predicted valid (again) and "zxqvb" predicted found → taught valid-vs-found (door vs search); fresh check "loop"/"12" correct. Chose words agent/persistence/provenance ("provanance" typo → data-side misspelling lesson). Predicted "Agent" not found (correct; case-sensitive). Short-circuit: first said "and still goes through every check" → shown order-as-guard; `False and 1/0` predicted/ran → False.
+
+### Code Comprehension — Patch 3 (`fake_model`, `run_agent`) + Patch 4 start (model-error trace)
+
+**Gate:** `split("'")` list correct; position `[1]` needed prompting. Contract: said the model **writes** state → corrected (model returns; loop writes). Then cold: who appends to trace / calls lookup_word / sets stop_reason → "the code" ×3, correct.
+
+**Predictions:** agent → 1 step, final_answer, definition (all correct). zxqvb → predicted 5 steps (model retries) → actual 1; learner explained correctly afterwards ("check, not found, report, stop").
+
+**Trace table pass 2:** kind final ✓; stop_reason given as description → label `"final_answer"`; trace length predicted 1 → 2 (final branch also appends). Learner added `print("trace length", len(...))` and predicted 2/2 correctly.
+
+**Failure paths:** max_steps=1 → learner predicted `max_steps` (after first saying final_answer); taught limit-too-tight = solvable task fails. "define agent" → predicted one-item list ✓; ran → IndexError inside fake_model crashed whole loop. Asked "wouldn't we tokenize like a real LLM?" → tokenizing is inside the model; loop must handle any model failure. Chose **option 2** (protect call in run_agent) because "it will stay".
+
+**Learner-written fixes:** try/except around fake_model → `stop_reason = "model_error"` (correct). Then Patch 4: identified evidence needed ("the error, what step, the request"); predicted entry as "model error: index error" → separated stop label vs error text. First attempt `{"error ": error}` (trailing-space key, no step, error object) → rewrote with f-string; asked "what does the f do" (taught); hit `NameError` from `state[step]` → fixed to `state["step"]` themselves. Final trace: `[{'error': 'IndexError: list index out of range', 'step': 0}]`.
+
+```text
+PATCH PURPOSE: stub model + bounded loop; stop cleanly on model failure with evidence
+INPUT: request, max_steps
+OUTPUT: final state with stop_reason in {final_answer, max_steps, model_error}
+STATE READ: request, trace (model); step, max_steps (loop)
+STATE WRITTEN: trace, step, stop_reason — only by the loop
+EXTERNAL DEPENDENCY: none (stub)
+STOP/ERROR PATH: max_steps=1 → max_steps; no-quote request → model_error + error entry
+ONE LINE/BLOCK I COULD NOT EXPLAIN: f-strings (now explained); indentation of test lines inside for-loop (fixed)
+MY OWN SMALL MODIFICATION: trace-length print; try/except; error trace entry
+RESULT: pass
+```
+
+**Resume here:** Patch 4 remainder — decide whether other trace entries need more (validation result for rejected tools; termination entry). Then Day 1 exit test (draw loop from memory, closed code). Open side item: Trellis duplicate-task `tool_invocations` query.
 
 ---
 

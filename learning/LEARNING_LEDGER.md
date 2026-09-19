@@ -201,9 +201,39 @@ Recurring pattern to watch: under pressure, reverts to "the LLM does/checks X" �
 
 ### 2026-09-18 / Day 1 Quiz — in progress
 
-**Q1** (`{"tool":"lookup_word","word":"12345"}` — should it run?): answered **yes** ("proposed by model, correct tool, valid string") — **incorrect** under the agreed contract (letters only). Same pattern: treats well-formed model proposal as sufficient. Brief correction given; **resume here** with full discussion, then Q2–Q5 + transfer.
+**Q1** (`{"tool":"lookup_word","word":"12345"}` — should it run?): answered **yes** ("proposed by model, correct tool, valid string") — **incorrect** under the agreed contract (letters only). With 4-check table: yes/yes/yes/no → does not run; "it is only numbers". Taught: "the model proposed it" is not a reason.
 
-**Promotion:** in progress — authority/validation is the live CMU watch-item candidate.
+**Q2** (what persists across passes): step and trace correct with reasons; thought action/obs persist too → refined: values persist via trace, variables are per-pass scratch. Correct.
+
+**Q3** (two termination mechanisms): final answer correct; max steps described as "error raised, infinite loop, debugging" → **reversed**: the bound prevents the infinite loop, stops cleanly, not success, label `max_steps`. Partial. Fresh check: stall rule → not success, label "heater on with no change" — correct.
+
+**Q4** (tool result = answer?): correct — observation handed back to model; added: model decides if more steps needed ("agent and tool").
+
+**Q5** (predict trace, misspelled "agnet", max 3): identified misspelling and `max_steps` label; **slip:** "at max steps hand back to model and model decides" → corrected: code stops, model not called. Partial. Bonus: repeated-action detection.
+
+**Fresh check on the shared gap (cold):** at step limit a valid proposal does not run, code stops, label max_steps — correct. Why model can't extend: "infinite loop of not giving up until a valid answer that will never come" — correct.
+
+**Transfer — calendar read-only tool:** check_calendar(date MM/DD/YYYY), proposed by model, read-only, no state change, returns events — correct. Refinements: real-date validation; **empty list `[]` = "free" is not a failure** (learner used None for both → ambiguity "free" vs "couldn't check"). Write tool: add_event with format checks → added authority, conflict, confirmation, idempotency (duplicate on retry).
+
+**Result:** Day 1 quiz PASS (after remediation of "code controls stopping"; fresh check and transfer correct).
+
+**Watch item (keep testing):** model-vs-code authority; appears as "the model decides/handles X" at stop/failure points.
+
+### 2026-09-19 / Day 1 — Trellis create_task trace (commit 11cf50b)
+
+**Predictions before code:** model chooses tool ✓; authority = "tasks already in the DB" (partial — that is authoritative state; authority is `policy.check`); state change = new task ✓; evidence = date/version/action event ✓ (`domain.write_events`); repeated identical call → "will add a duplicate" ✗ (code replays via `idempotency.acquire`). Proposed `set()` of tasks → taught: set dedupes by content (blocks legitimate same-title tasks); Trellis dedupes by same call (`run_id` + `tool_call_id` + args hash).
+
+**Learner observation:** running Trellis produced duplicate tasks with new ids. Checked `test_duplicate_tool_call_commits_once`: protection covers retries of the same tool_call_id only. Learner first predicted same run_id + tool_call_id; shown that contradicts the replay code → updated prediction: different tool_call_id. **Open:** learner to run `tool_invocations` query and classify (new turn = by design; same run/different call ids = model double-call gap; same ids = bug).
+
+**Transfer check:** Q1 "create_task function… replay_completed first" → refined: create_task calls, `idempotency.acquire` decides (EXECUTE/REPLAY). Q2 `policy.check` (actor id, tool name) — correct.
+
+### 2026-09-19 / Day 1 — Patch 1 before-code gate (AgentState), in progress
+
+**Cold field list:** step ✓, max_steps ✓; request missing; used "state" for the history field (→ `trace`); termination as "tool fulfilled = success / data not found = failure" → corrected: not-found is an observation; run can succeed with a truthful "not in dictionary" final answer; stop labels are `final_answer`, `max_steps`, `repeated_action`.
+
+**Learner confusion (legit):** "I don't know what the overarching agent will do — am I supposed to decide?" → gave full agent picture: tiny dictionary helper; fake model stub; `lookup_word` over ~3 built-in words; loop; guardrails = validation rule + max steps; one full end-to-end example run. Learner decides only bounded choices (validation rule, max steps, dictionary words).
+
+**Resume here:** learner predicts initial AgentState values (request, step, max_steps=5, trace, stop_reason) → then state patch scope → Patch 1 code (~10–30 lines).
 
 ---
 

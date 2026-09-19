@@ -109,6 +109,7 @@ docs/
   DESIGN_REVIEW_RUBRIC.md
   FINAL_READINESS_CHECK.md
   SOURCE_MAP.md
+  TRELLIS_CODE_MAP.md
 
 learning/
   LEARNING_LEDGER.md
@@ -118,8 +119,9 @@ learning/
 
 1. Read `SOURCES.md` and `docs/SOURCE_MAP.md` so you know exactly what the curriculum is based on.
 2. Read `docs/SPRINT_PLAN.md` and choose 3-day or 4-day mode.
-3. Run `FIRST_SESSION.md`.
-4. Take `docs/PREREQUISITE_DIAGNOSTIC.md` before writing agent code.
-5. Follow the day plan in order.
+3. Read `docs/TRELLIS_CODE_MAP.md` for the pinned repository identity and the prior-work examples used after each day gate.
+4. Run `FIRST_SESSION.md`.
+5. Take `docs/PREREQUISITE_DIAGNOSTIC.md` before writing agent code.
+6. Follow the day plan in order.
 
 The repository begins with **documentation only** on purpose.

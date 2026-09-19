@@ -74,6 +74,25 @@ See `FUNDAMENTALS.md` sections A–C.
 
 Take Day 1 quiz from `QUIZ_PROTOCOL.md`.
 
+## Related to Trellis — after the quiz
+
+Only use this section after the Day 1 quiz passes. Trellis is code you have already built, so it is the transfer example—not a shortcut around explaining the mechanism first.
+
+Trace one concrete request: **“Create a task called Study approval boundaries.”**
+
+```text
+handle_agui_request
+→ model proposes CreateTaskArgs
+→ build_agent's create_task wrapper
+→ tools.create_task
+→ policy.check
+→ idempotency.acquire
+→ domain.create_task + domain.write_events
+→ idempotency.complete + commit
+```
+
+Use the pinned, symbol-level links in `TRELLIS_CODE_MAP.md` under **Day 1 — Agent, state, tools, loop, and authority**. Before opening the code, predict which component chooses the action, which component has authority to allow it, what state changes, what evidence is written, and what a repeated identical tool call should do.
+
 ## Tiny implementation — CORE
 
 Build only after the quiz passes:
@@ -173,6 +192,14 @@ No vector database is required.
 
 Explain the RAG pipeline without saying “the framework handles it.”
 
+## Related to Trellis
+
+Use `TRELLIS_CODE_MAP.md` under **Day 2 — Context, state, memory, evidence, and RAG**.
+
+The most concrete Trellis example is a second user turn: `runs.create_turn` inherits server-owned canonical history, `handle_agui_request` ignores a browser-supplied transcript as authority, and `_project_prior_turn_history_for_model` changes the model's view without rewriting the durable record. Then compare that path with `get_task_history` and `resolve_task_reference`, which retrieve structured PostgreSQL evidence.
+
+Be precise about the boundary: Trellis does **not** contain embeddings, a vector database, or a RAG pipeline. Explain which Day 2 categories Trellis does demonstrate, then state what new stages a real RAG path would need.
+
 ---
 
 # Day 3 — Reasoning, Multi-Agent, Evaluation, Safety
@@ -261,6 +288,14 @@ Take `FINAL_READINESS_CHECK.md`.
 
 If you pass, you are done with the bridge even if you never installed LangGraph or CrewAI.
 
+## Related to Trellis
+
+Use `TRELLIS_CODE_MAP.md` under **Day 3 — Reasoning, multi-agent boundaries, evaluation, and safety**.
+
+Trace one destructive request through the framework approval interrupt, the server-owned approval row, continuation resolution, and the deterministic policy recheck. Then map the five evaluation scenarios above to the linked Trellis tests.
+
+Do not call Trellis multi-agent merely because it constructs browser and Linear agent profiles. They share one prompt, tool kernel, and state boundary and do not hand work to each other. Use that single-agent baseline to explain exactly what roles, handoff state, coordination, and termination rules a genuine second agent would add.
+
 ---
 
 # Day 4 — Optional Consolidation and Mock CMU Lab
@@ -325,3 +360,11 @@ teach back
 ## 4. Delayed retrieval
 
 Retake the final quiz without opening notes.
+
+## Related to Trellis
+
+Use `TRELLIS_CODE_MAP.md` under **Day 4 — Framework mapping and capstone-level trace**.
+
+Translate Trellis back from Pydantic AI and AG-UI vocabulary into ordinary mechanisms: state, action, decision, loop, termination, authority, and evidence. Then narrate the complete `create_task` path and, for every boundary, state its input, output, mutable state, authority, and failure behavior.
+
+For the mock transfer, design—but do not automatically implement—a read-only “list overdue tasks” behavior. Predict where its typed contract, model-visible tool, deterministic query, replay evidence, and tests would belong before opening the linked code.

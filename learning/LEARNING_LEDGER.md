@@ -292,7 +292,15 @@ MY OWN SMALL MODIFICATION: trace-length print; try/except; error trace entry
 RESULT: pass
 ```
 
-**Resume here:** Patch 4 remainder — decide whether other trace entries need more (validation result for rejected tools; termination entry). Then Day 1 exit test (draw loop from memory, closed code). Open side item: Trellis duplicate-task `tool_invocations` query.
+### 2026-09-20 / Day 1 — Patch 4 completion (honest rejection + reason in trace)
+
+**Cold prediction for `"what does '12345' mean?"`:** fails `isalpha`; rejected observation has no `found` key; `.get` returns None → agent answers "couldn't find it"; **learner judged this dishonest unprompted** ("it is not a valid word to begin with"). Confirmed by running.
+
+**Learner-written edits:** added `"reason": "failed input check: letters only, 1-30 characters"` to the rejected observation, and a `rejected` branch in `fake_model` returning "'X' is not a word I can look up." Predicted correctly that agent/zxqvb runs would be unchanged.
+
+Agent now distinguishes rejected-at-the-door from searched-and-absent, and every stop leaves evidence.
+
+**Resume here:** Day 1 exit test / Gate 1 (closed code, 7 items incl. new-domain read-only tool contract for a music app). Open side item: Trellis duplicate-task `tool_invocations` query.
 
 ---
 

@@ -42,6 +42,8 @@ def fake_model(state):
     if not state["trace"]:
         return {"kind": "tool", "tool": "lookup_word", "word": word}
     observation = state["trace"][-1]["observation"]
+    if observation.get("rejected"):
+        return {"kind": "final", "answer": f"'{word}' is not a word I can look up."}
     if observation.get("found"):
         return {"kind": "final", "answer": f"'{word}' means {observation['definition']}"}
     return {"kind": "final", "answer": f"I couldn't find '{word}' in the dictionary."}
@@ -67,12 +69,12 @@ def run_agent(request, max_steps):
         if proposal["tool"] == "lookup_word" and is_valid_word(proposal["word"]):
             observation = lookup_word(proposal["word"])
         else:
-            observation = {"rejected": True, "word": proposal["word"]}
+            observation = {"rejected": True, "word": proposal["word"], "reason": "failed input check: letters only, 1-30 characters"}
         state["trace"].append({"step": state["step"], "proposal": proposal, "observation": observation})
         state["step"] = state["step"] + 1
 
 
-for request in ["what does 'agent' mean?", "what does 'zxqvb' mean?"]:
+for request in ["what does 'agent' mean?", "what does '12345' mean?"]:
     result = run_agent(request, 5)
     print(request)
     print("  step:", result["step"], "| stop_reason:", result["stop_reason"])

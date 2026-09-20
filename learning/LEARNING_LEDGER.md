@@ -341,9 +341,21 @@ MY OWN SMALL MODIFICATION: add "country" to the bounded result — IN PROGRESS
 RESULT: predictions for all four demo calls correct cold
 ```
 
-**Resume here:** finish Patch 5 own-edit (add `country`), then optional 15-min exercise (point `run_agent` at `lookup_postcode` and watch the loop stay unchanged), then Day 1B exit test (draw request/response path from memory; distinguish the five failure kinds). Then Day 2.
+**Own edit completed:** added `country` from the top-level body (asked a good question first — did not know the body shape; taught inspecting one real response instead of guessing). The new line was the only unguarded reach-in; learner predicted a shape error but the code would have raised `KeyError`, so the guard was added. Explained why a returned failure beats a crash: the loop can record it in the trace as evidence.
+
+### 2026-09-20 / Day 1B — Exit test (code closed)
+
+1. **Request/response path:** recalled the tool internals in correct order from memory (status/raw, transport errors, 200 check, JSON parse, shape checks, bounded result). Missed both ends — the model proposing the call plus input validation before sending, and the result becoming an observation for the next decision. (One tutor question was badly framed: asked what "the model" does inside `api_tool.py`, which has no model; learner correctly pushed back.)
+2. **Five failure kinds + did a request leave:** all five correct cold.
+3. **Classification:** all five correct cold (input validation / HTTP / response shape / network / agent loop).
+
+**Result:** Day 1B PASS. Day 1 complete, including the external API boundary.
+
+**Not done (optional, 15 min):** wire `run_agent` to `lookup_postcode` to show the loop stays unchanged.
 
 Open side item: Trellis duplicate-task `tool_invocations` query.
+
+**Next:** Day 2 — memory vs state vs evidence, RAG pipeline (paper exercises).
 
 ---
 

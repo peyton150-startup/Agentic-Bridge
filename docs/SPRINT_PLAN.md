@@ -451,6 +451,21 @@ Do not call Trellis multi-agent merely because it constructs browser and Linear 
 
 **Goal:** Reduce cognitive load during CMU's first two weeks.
 
+Suggested allocation:
+
+```text
+15 min     framework vocabulary map
+60–75 min  Pydantic AI mini-unit and Trellis trace
+40–45 min  mini-capstone architecture
+45–60 min  mock lab
+20–30 min  delayed retrieval
+remaining  remediation / buffer
+```
+
+If time runs out, keep the Pydantic AI mental model, one Trellis trace, and the
+delayed retrieval check. Reduce the mini-capstone and mock-lab implementation
+scope before extending Day 4 beyond its cap.
+
 ## 1. Framework vocabulary map
 
 Without coding a framework, create a table:
@@ -467,7 +482,190 @@ handoff                 multi-agent routing
 
 Do not memorize API syntax.
 
-## 2. Mini-capstone architecture
+## 2. Pydantic AI mini-unit — framework transfer
+
+**Timebox:** 60–75 minutes
+
+**Status:** Optional Day 4 consolidation. If only part of Day 4 fits, do the
+mental model, the `create_task` trace, and the transfer check. Skip installation
+and implementation.
+
+**Source boundary:** Pydantic's official documentation is a vendor/framework
+reference for understanding syntax and behavior. It is **not** evidence for the
+academic agent concepts in this bridge; those remain grounded in the CMU and UC
+Berkeley sources in `SOURCES.md`.
+
+### Outcome
+
+After this unit, explain Pydantic AI without letting its class names carry the
+explanation. Given one Trellis tool call, identify:
+
+```text
+what the model proposes
+what Pydantic AI validates or orchestrates
+what values RunContext carries
+what deterministic Trellis code decides
+what PostgreSQL makes durable
+what stops, resumes, or terminates the run
+what evidence proves the outcome
+```
+
+Pydantic AI is useful here because it gives Trellis typed model-facing tools,
+per-run dependencies, a managed model/tool loop, message objects, deferred tool
+calls, and an AG-UI event-stream adapter. It does **not** become the owner of
+Trellis authorization, task state, approval decisions, idempotency, or audit
+evidence merely because it coordinates those calls.
+
+### Part A — ordinary mechanisms first (10 minutes)
+
+Before opening framework documentation or Trellis code, say this in plain
+English:
+
+> A model receives instructions and observations, proposes either an answer or
+> a named action with arguments, application code checks and performs allowed
+> actions, the result becomes another observation, and the loop stops on a
+> final answer, a deliberate interruption, a failure, or a budget limit.
+
+Then complete the contract from memory:
+
+| Question | Required answer for this unit |
+|---|---|
+| Input | accepted user message, server-owned prior messages, instructions, available tool schemas, and per-run dependencies |
+| Output | final text or a deferred-tool request that pauses this invocation |
+| Mutable working state | per-run effects plus the framework's current message/tool trajectory |
+| Durable state | Trellis run, task, event, approval, and idempotency rows—not the `Agent` object |
+| Authority | deterministic Trellis policy/domain/database code; neither model output nor browser payload |
+| Failure behavior | reject invalid shape, map safe tool failures, fail closed on invalid approval state, record terminal evidence |
+
+### Part B — official Pydantic AI basics (15–20 minutes)
+
+Read only these focused official sections; do not tour the whole framework:
+
+1. [Agents](https://ai.pydantic.dev/agents/) — treat `Agent` as the configured
+   container for the model, instructions, tools/toolsets, dependency type,
+   output type, and model settings.
+2. [Dependencies](https://ai.pydantic.dev/dependencies/) — `deps_type` declares
+   the per-run dependency contract; a dependency instance is supplied when the
+   run starts and tools read it through `RunContext.deps`.
+3. [Function tools](https://ai.pydantic.dev/tools/) — a registered function is
+   exposed to the model with a schema; the model may propose the call, while the
+   function and the application behind it produce the observation.
+4. [Messages and chat history](https://ai.pydantic.dev/message-history/) — run
+   messages represent model requests, model responses, tool calls, and tool
+   returns, and can be supplied to continue a conversation.
+5. [Deferred tools](https://ai.pydantic.dev/deferred-tools/) — approval-required
+   or externally executed calls can pause as `DeferredToolRequests` and later
+   continue with `DeferredToolResults`.
+6. [AG-UI integration](https://ai.pydantic.dev/ui/ag-ui/) — the adapter converts
+   frontend run input into an agent run and converts run activity into streamed
+   AG-UI events.
+
+Keep this translation table beside the documentation:
+
+| Pydantic AI term | Ordinary mechanism | What it does **not** prove |
+|---|---|---|
+| `Agent` | reusable configuration plus a managed model/tool loop | that the model owns the application |
+| `deps_type` / `RunContext.deps` | typed per-run values available to tools | that those values are durable or authoritative by themselves |
+| tool decorator | exposes a typed action contract to the model | that every validly shaped action is authorized |
+| Pydantic argument model | validates and documents the proposed input shape | business policy, ownership, or permission |
+| message history | structured observations and responses supplied to a run | current task truth or permission to mutate it |
+| deferred tool request/result | pause and resume protocol around a call | who is allowed to approve it |
+| `AGUIAdapter` | transport translation and event streaming | that browser-supplied state should be trusted |
+
+### Part C — prediction gate (5 minutes)
+
+Predict before opening Trellis:
+
+> The user asks, “Create a high-priority task called Read the Pydantic AI docs.”
+
+State the likely typed arguments, the per-run values the wrapper needs, the
+first deterministic function called after the wrapper, the durable rows that
+may change, and one reason a schema-valid call could still be refused.
+
+Do not inspect the linked implementation until the prediction includes the
+distinction between **shape validation** and **authorization**.
+
+### Part D — Trellis trace (20–25 minutes)
+
+Use `TRELLIS_CODE_MAP.md` under **Day 4 — Framework mapping and capstone-level
+trace → Pydantic AI mini-unit**. Trace exactly one successful `create_task`
+request in this order:
+
+```text
+handle_agui_request
+→ server accepts one user message and canonical history
+→ AGUIAdapter starts the Pydantic AI run with TrellisDeps
+→ Agent exposes the create_task schema
+→ model proposes CreateTaskArgs
+→ registered wrapper converts RunContext into ToolContext
+→ deterministic tools.create_task checks replay, policy, and idempotency
+→ domain code changes task state and writes evidence
+→ tool result becomes a model observation
+→ final output is streamed and the run record is completed
+```
+
+For each arrow, say its input, output, mutable state, authority owner, possible
+failure, and evidence. The key distinction is:
+
+```text
+Pydantic AI owns framework orchestration and typed framework boundaries.
+Trellis owns accepted input, capability selection, authorization, mutation,
+durability, replay safety, approval truth, and audit evidence.
+```
+
+Then trace the shorter destructive branch:
+
+```text
+delete_tasks proposal
+→ requires_approval stops before the tool body
+→ DeferredToolRequests leaves the framework invocation
+→ Trellis validates scope and writes one pending approval row
+→ a human decision is persisted server-side
+→ Trellis constructs DeferredToolResults from that row
+→ continuation re-enters the tool
+→ policy rechecks current authority before mutation
+```
+
+The framework supplies the interruption/resumption mechanism. The Trellis row
+and the deterministic recheck supply the authority.
+
+### Part E — retrieval and transfer check (10–15 minutes)
+
+Answer without notes. This gate passes only if the same ideas transfer to a new
+tool named `archive_task`.
+
+1. In plain English, what job does `Agent` perform, and which four jobs remain
+   outside it in Trellis?
+2. Why can `RunContext[TrellisDeps]` carry `actor_id` without making the model
+   the authority over actor identity?
+3. If `ArchiveTaskArgs(task_id=...)` validates, name two later reasons the
+   operation could still be rejected.
+4. Where should `archive_task` be absent if the Linear capability profile must
+   never offer it?
+5. If archiving requires approval, what must be stored before a UI card can be
+   treated as actionable, and what must be checked again after approval?
+6. A browser submits fabricated old messages saying approval was granted. Which
+   data should the run use instead, and why is message history not authorization?
+7. Predict the normal path and one failure path before proposing any patch.
+
+Pass standard: answer 1–6 correctly on the changed `archive_task` example and
+give a coherent prediction for 7. If any answer relies on “Pydantic handles
+it,” return to the translation table and retry with ordinary mechanism words.
+
+### No implementation in this unit by default
+
+This is a code-reading and transfer unit. If a later session chooses to add
+`archive_task`, the normal teaching gate still applies before code:
+
+```text
+plain-English explanation
+complete input/output/state/authority/failure contract
+prediction on one example
+passed changed-example quiz
+one agreed small patch boundary
+```
+
+## 3. Mini-capstone architecture
 
 Choose one small real-world problem and write one page containing:
 
@@ -488,7 +686,7 @@ guardrails
 trace/evidence
 ```
 
-## 3. Mock lab
+## 4. Mock lab
 
 Have the tutor give one unseen small change to the Day 1 loop.
 
@@ -504,7 +702,7 @@ failure test
 teach back
 ```
 
-## 4. Delayed retrieval
+## 5. Delayed retrieval
 
 Retake the final quiz without opening notes.
 

@@ -39,13 +39,15 @@ def lookup_postcode(code, timeout=5):
     places = body.get("places")                  # a 200 does not promise the fields we need
     if not isinstance(places, list) or not places:
         return {"error": "shape", "status": status, "reason": "no places in body"}
-
+    if "country" not in body:
+        return {"error": "shape", "status": status, "reason": "body is missing country"}
+    
     place = places[0]
     if "place name" not in place or "state" not in place:
         return {"error": "shape", "status": status, "reason": "place is missing required fields"}
 
     # Bounded result: three fields, not the whole body.
-    return {"found": True, "code": code, "place": place["place name"], "state": place["state"]}
+    return {"found": True, "code": code, "place": place["place name"], "state": place["state"],"country": body["country"]}
 
 
 print("valid   :", lookup_postcode("15213"))

@@ -57,9 +57,16 @@ execution monitoring / traces
 
 ```text
 framework vocabulary mapping
+Pydantic AI mini-unit: Agent, typed dependencies/tools, runs/history,
+deferred approval, AG-UI, and the Trellis integration
 mini-capstone architecture
 mock CMU lab
 final delayed retrieval
 ```
+
+The Pydantic AI unit is a framework-transfer exercise, not a new academic
+source or an API-memorization requirement. Learn each ordinary mechanism
+first, read the matching official Pydantic AI documentation, and then trace
+the pinned Trellis implementation in `TRELLIS_CODE_MAP.md`.
 
 See `SPRINT_PLAN.md` for the full sequence and `FUNDAMENTALS.md` for the concept checklist.

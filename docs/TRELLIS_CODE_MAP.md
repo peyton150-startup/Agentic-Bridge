@@ -185,6 +185,113 @@ For one row above, state the expected outcome, allowed state changes, maximum re
 
 ## Day 4 — Framework mapping and capstone-level trace
 
+### Pydantic AI mini-unit
+
+This is the code-reading companion to the Day 4 unit in `SPRINT_PLAN.md`. The
+official Pydantic AI documentation explains framework behavior; the pinned
+Trellis links below show how this application uses that behavior. Neither is a
+replacement for the academic sources or the plain-English mechanism.
+
+#### One framework object, several separate responsibilities
+
+Start with [`build_agent`](https://github.com/peyton150-startup/Trellis_AI_Chatbot_Task_Manager/blob/11cf50bc5882b71062b65e83f436b2e9317354b1/backend/app/agent.py#L430-L500), then classify each constructor value rather than reading it as one opaque "agent":
+
+| Trellis/Pydantic AI element | Framework job | Application-owned boundary |
+|---|---|---|
+| `Agent(...)` | assembles the model, instructions, tool schemas, dependency type, output alternatives, retry settings, and tool-loop behavior | constructing an agent does not grant mutation authority |
+| `deps_type=TrellisDeps` | declares the type of values available during a run | [`TrellisDeps`](https://github.com/peyton150-startup/Trellis_AI_Chatbot_Task_Manager/blob/11cf50bc5882b71062b65e83f436b2e9317354b1/backend/app/agent.py#L327-L346) carries a server-selected actor and application run id; the model does not choose either |
+| `instructions=prompts.SYSTEM_PROMPT` | supplies developer guidance to the model | a prompt can guide behavior but cannot replace `policy.check` |
+| `model_settings=_model_settings()` | bounds and configures provider requests | [`_model_settings`](https://github.com/peyton150-startup/Trellis_AI_Chatbot_Task_Manager/blob/11cf50bc5882b71062b65e83f436b2e9317354b1/backend/app/agent.py#L379-L408) makes timeout, token ceiling, reasoning budget, and temperature application-owned choices |
+| `output_type=[str, DeferredToolRequests]` | permits a normal answer or a paused/deferred outcome | Trellis decides whether a surfaced request may become an authoritative approval row |
+| `_tool(...)` / `agent.tool(...)` | includes a wrapper and its schema in the model-visible action set | `toolset` decides which capabilities exist for a profile before the model runs |
+
+#### Typed proposal is not permission
+
+Follow one create request through three boundaries:
+
+1. [`CreateTaskArgs`](https://github.com/peyton150-startup/Trellis_AI_Chatbot_Task_Manager/blob/11cf50bc5882b71062b65e83f436b2e9317354b1/backend/app/models.py#L437-L442) defines the model-facing argument shape: title, notes, due date, priority, and dependency.
+2. The registered [`create_task` wrapper](https://github.com/peyton150-startup/Trellis_AI_Chatbot_Task_Manager/blob/11cf50bc5882b71062b65e83f436b2e9317354b1/backend/app/agent.py#L528-L536) receives `RunContext[TrellisDeps]`, translates it with `_tool_context`, calls the deterministic tool, and records only the per-run fact that a mutation committed.
+3. [`tools.create_task`](https://github.com/peyton150-startup/Trellis_AI_Chatbot_Task_Manager/blob/11cf50bc5882b71062b65e83f436b2e9317354b1/backend/app/tools.py#L396-L551) owns replay detection, policy, idempotency, domain mutation, event writing, and commit.
+
+The schema answers “is this proposal shaped like a create-task request?” It does
+not answer “may this actor do it now?”, “was this invocation already applied?”,
+or “what transaction becomes durable?” Those are later application decisions.
+
+#### RunContext is a carrier, not durable state
+
+[`TrellisDeps` and `RunEffects`](https://github.com/peyton150-startup/Trellis_AI_Chatbot_Task_Manager/blob/11cf50bc5882b71062b65e83f436b2e9317354b1/backend/app/agent.py#L327-L346) separate three easily confused values:
+
+| Value | Lifetime and meaning |
+|---|---|
+| `ctx.deps.actor_id` | server-selected actor for this invocation; an input to later checks |
+| `ctx.deps.run_id` | durable Trellis `agent_runs.id`, stable across an approval continuation |
+| Pydantic AI `RunContext.run_id` | framework invocation identity, which can change when one application run pauses and resumes |
+| `ctx.deps.effects.mutation_committed` | mutable working evidence used while streaming; not the authoritative task record |
+
+Ask: if an approval divides one Trellis run into two framework invocations,
+which identifier should an audit query use? The answer must come from the
+lifetimes above, not from the shared word “run.”
+
+#### Capability profiles are defined by absence
+
+Compare [`get_agent`](https://github.com/peyton150-startup/Trellis_AI_Chatbot_Task_Manager/blob/11cf50bc5882b71062b65e83f436b2e9317354b1/backend/app/agent.py#L645-L660) with [`get_linear_agent`](https://github.com/peyton150-startup/Trellis_AI_Chatbot_Task_Manager/blob/11cf50bc5882b71062b65e83f436b2e9317354b1/backend/app/agent.py#L663-L677). Both use the same model, prompt, wrappers, and deterministic kernel. The Linear profile passes a smaller `toolset`, so deletion and bulk update are never registered and never appear in the model-visible schema.
+
+This is stronger than asking the model not to call them. A missing capability
+cannot be selected by prompt injection, ordinary model error, or invented tool
+arguments because the framework was never given that action for this profile.
+
+#### AG-UI transports accepted input; it does not define truth
+
+Trace [`handle_agui_request`](https://github.com/peyton150-startup/Trellis_AI_Chatbot_Task_Manager/blob/11cf50bc5882b71062b65e83f436b2e9317354b1/backend/app/agent.py#L680-L758):
+
+```text
+AG-UI request bytes
+→ RunAgentInput parsing
+→ Trellis extracts the newest accepted user message/continuity locator
+→ runs.create_turn resolves and stores server-owned continuity
+→ Trellis rebuilds a narrow run input
+→ stored history is validated into Pydantic AI message objects
+→ prior-turn reasoning is projected out for the provider view
+→ AGUIAdapter starts the run with TrellisDeps
+→ framework events are recorded and transformed into an AG-UI stream
+```
+
+The adapter provides protocol translation and streaming. Trellis deliberately
+does not grant authority to the browser's transcript, actor claims, approval
+claims, or task state. [`_project_prior_turn_history_for_model`](https://github.com/peyton150-startup/Trellis_AI_Chatbot_Task_Manager/blob/11cf50bc5882b71062b65e83f436b2e9317354b1/backend/app/agent.py#L1448-L1495) also demonstrates that the durable record and the model's current context can be different views without either being silently rewritten.
+
+#### Deferred approval: framework pause, application authority
+
+Trace the destructive path in this order:
+
+1. [`delete_tasks` registration](https://github.com/peyton150-startup/Trellis_AI_Chatbot_Task_Manager/blob/11cf50bc5882b71062b65e83f436b2e9317354b1/backend/app/agent.py#L619-L632) sets `requires_approval=True`, so Pydantic AI defers the call before its body executes.
+2. [`_open_approval`](https://github.com/peyton150-startup/Trellis_AI_Chatbot_Task_Manager/blob/11cf50bc5882b71062b65e83f436b2e9317354b1/backend/app/agent.py#L1350-L1415) rejects unsupported or ambiguous requests, validates typed arguments, checks preview scope before fetching details, and prepares the server-owned approval record.
+3. [`runs.open_approval`](https://github.com/peyton150-startup/Trellis_AI_Chatbot_Task_Manager/blob/11cf50bc5882b71062b65e83f436b2e9317354b1/backend/app/runs.py#L618-L665) persists the pending decision boundary.
+4. [`runs.decide_approval`](https://github.com/peyton150-startup/Trellis_AI_Chatbot_Task_Manager/blob/11cf50bc5882b71062b65e83f436b2e9317354b1/backend/app/runs.py#L697-L726) persists the human decision once.
+5. [`_deferred_results`](https://github.com/peyton150-startup/Trellis_AI_Chatbot_Task_Manager/blob/11cf50bc5882b71062b65e83f436b2e9317354b1/backend/app/agent.py#L1196-L1211) constructs `ToolApproved` or `ToolDenied` only from the stored row and supplies no argument override.
+6. The resumed tool still reaches [`policy.check`](https://github.com/peyton150-startup/Trellis_AI_Chatbot_Task_Manager/blob/11cf50bc5882b71062b65e83f436b2e9317354b1/backend/app/policy.py#L95-L192), because ownership or task state may have changed while a human was deciding.
+
+Say the separation exactly: Pydantic AI determines that execution is deferred
+and carries a correlated continuation result. Trellis determines whether the
+request is eligible, what arguments were approved, who decided, whether current
+policy still permits execution, and what is committed.
+
+#### Mini-unit transfer check
+
+For a hypothetical approval-gated `archive_task` tool, predict all seven before
+opening any implementation:
+
+1. its typed argument model;
+2. its model-visible wrapper and docstring contract;
+3. which capability profile(s) register it;
+4. the `TrellisDeps` values it consumes;
+5. the deterministic policy/idempotency/domain path behind it;
+6. the persisted approval and audit evidence required;
+7. one validation failure, one authority failure, and one stale-state failure.
+
+Passing means the learner can point to a distinct owner for every item. “The
+agent handles it” is not a passing answer.
+
 ### Map framework words back to Trellis mechanisms
 
 | Framework-style word | Ordinary mechanism in Trellis |

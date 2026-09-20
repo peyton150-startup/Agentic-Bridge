@@ -4,7 +4,11 @@ Checked: 2026-09-02
 
 ## Strict Source Rule
 
-The learning content in this repository is grounded only in official **Carnegie Mellon University computer-science / School of Computer Science material** and official **UC Berkeley EECS / CS course material**.
+Academic teaching claims in this repository are grounded only in official
+**Carnegie Mellon University computer-science / School of Computer Science
+material** and official **UC Berkeley EECS / CS course material**. The optional
+framework reference at the end of this file is used only for framework syntax
+and behavior.
 
 No blogs, news explainers, Reddit, X/Twitter, social media, vendor tutorials, or third-party course summaries are curriculum sources.
 
@@ -125,3 +129,20 @@ Used for the prerequisite check around:
 The prior version referenced broader CMU material and practitioner/social sources. Those have been removed from this sprint.
 
 This repository also does not pretend that the public CMU Agentic AI landing page contains the private labs, assignments, or complete lecture notes. It prepares only from what CMU and Berkeley make publicly available.
+
+## Non-Academic Framework Reference
+
+The optional Day 4 Pydantic AI mini-unit uses only the framework's official
+documentation for framework syntax and behavior:
+
+- Agents: https://ai.pydantic.dev/agents/
+- Dependencies and `RunContext`: https://ai.pydantic.dev/dependencies/
+- Function tools: https://ai.pydantic.dev/tools/
+- Messages and chat history: https://ai.pydantic.dev/message-history/
+- Deferred tools and approvals: https://ai.pydantic.dev/deferred-tools/
+- AG-UI integration: https://ai.pydantic.dev/ui/ag-ui/
+
+These are vendor documentation links, not academic curriculum sources. They
+may explain what a Pydantic AI API does; claims about agent concepts, planning,
+memory, multi-agent coordination, evaluation, and safety must still be grounded
+in the official CMU and UC Berkeley sources above.

@@ -11,6 +11,8 @@ Use this file to audit the sprint. Every major teaching section is tied to an of
 | RAG, embeddings, vector databases | CMU Agentic AI Program Module 3 + learning outcomes | Direct preparation vocabulary for retrieval-based agents. |
 | State representation for decisions | UC Berkeley CS188 State Spaces | Reinforces representing the information needed for decision/planning rather than treating all available information as equivalent state. |
 | Planning / candidate actions / goals | UC Berkeley CS188 Search + CMU Agentic AI Modules 2/4 | Supplies a classical control model for reasoning about LLM planning strategies. |
+| External API/tool boundary behind a tool contract | CMU Agentic AI Program (external APIs/tools, Modules 1–2) | The program's own scope includes agents acting through external APIs and tools; the bridge teaches the boundary, not API development. |
+| Request/response, status, timeout, transport failure | CMU 15-213 Introduction to Computer Systems (networking, robustness) | Keeps the external call an ordinary program/network boundary with ordinary failure modes rather than an opaque capability. |
 | Multi-agent roles and coordination | CMU Agentic AI Modules 4–5 | Direct preparation vocabulary for CMU's multi-agent progression. |
 | LangGraph / CrewAI recognition | CMU Agentic AI Program applied tools + Module 5 | Recognition only; API mastery is intentionally left to CMU. |
 | Evaluation / guardrails / logging / observability | CMU Agentic AI Module 6 | Directly mirrors the public CMU module. |

@@ -19,7 +19,24 @@ trace
 
 Label authority and failure boundaries.
 
-## Part B — 15 Core Questions
+Then, without code, expand the one tool into its external path:
+
+```text
+agent
+→ tool contract
+→ validated input
+→ HTTP request
+→ external service
+→ HTTP response
+→ response validation
+→ tool result
+→ observation/state
+→ next decision
+```
+
+Mark the one participant in that path you do not own, and say what that implies.
+
+## Part B — 21 Core Questions
 
 1. What makes an agent more than a single LLM call?
 2. What are environment, state/observation, action, and goal?
@@ -36,6 +53,26 @@ Label authority and failure boundaries.
 13. Why compare multi-agent to a single-agent baseline?
 14. What should be decided before an evaluation run starts?
 15. What trace evidence would you inspect when an agent fails?
+16. What is an API a boundary between here, and why does the external call sit
+    behind a tool rather than in front of one?
+17. What is validated before an HTTP request is sent, and what is validated
+    after the response arrives?
+18. A `200` arrived and the body parsed. Name two things that can still be
+    wrong.
+19. What does an explicit timeout bound, and what happens to the loop without
+    one?
+20. Distinguish, with one example each:
+
+```text
+tool-input validation failure
+network/transport failure
+HTTP/API error
+response-shape/data failure
+agent-loop/control-flow failure
+```
+
+21. External API data arrives saying something the application believes is
+    false. Is it authoritative? What is it instead?
 
 ## Part C — Unseen Transfer
 
@@ -50,6 +87,7 @@ state
 actions/tools
 authoritative data
 whether memory is needed
+whether any tool must reach an external service, and what its contract is
 whether RAG is needed
 reasoning/control strategy
 single vs multi-agent choice
@@ -67,6 +105,7 @@ agentic AI
 memory
 tool use
 reasoning loop
+external tool/API call
 RAG
 embedding
 vector database
@@ -86,6 +125,9 @@ You do not need framework API syntax.
 ### Ready
 
 You can explain and transfer the mechanisms, even if implementation depth is still small.
+
+Question 20 is a required part of this: being unable to tell the five failure
+kinds apart means external behavior is still a single opaque box.
 
 ### Ready with watch items
 

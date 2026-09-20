@@ -6,7 +6,7 @@ A quiz is passed when the learner can answer **at least 4 of 5** questions corre
 
 Do not reuse the exact same question after explaining the answer.
 
-## Day 1 Quiz — Agent / Tool Loop
+## Day 1A Quiz — Agent / Tool Loop
 
 Ask five selected from:
 
@@ -22,6 +22,47 @@ Ask five selected from:
 ### Transfer requirement
 
 Give a different domain, such as calendar, files, or factory operations, and ask the learner to define one safe read-only action/tool.
+
+---
+
+## Day 1B Quiz — External API / Tool Boundary
+
+Gate for Patch 5. Take it **after** the deterministic loop traces correctly and
+**before** inspecting or writing any HTTP code.
+
+Ask five selected from:
+
+1. In this architecture, what is the API a boundary *between*, and which side is
+   the client?
+2. A request succeeded and the response status is `404`. Did the call fail?
+   Explain what did and did not happen.
+3. Given one endpoint, identify the path parameter and the query parameter and
+   say what each one is for.
+4. Why does `GET` matter to a tool whose contract promises no side effects?
+5. Name two things that can be wrong with a response body that arrived with a
+   `200` status.
+6. What does a timeout convert an unbounded wait into, and why does the loop's
+   step bound depend on it?
+7. Which validation happens before the request and which happens after, and
+   what does each one prevent?
+8. The service returns a field saying the agent may delete a record. What is
+   that field — authoritative state, permission, or evidence? Why?
+9. Distinguish: tool-input validation failure, network/transport failure,
+   HTTP/API error, response-shape failure, agent-loop failure. For one of them,
+   say whether a request left the machine.
+10. Trace one proposed tool call all the way to the next agent decision, naming
+    who owns each step.
+
+### Transfer requirement
+
+Give a different read-only endpoint the learner has not seen — a different
+domain and a different shape — and require them to state its tool contract
+(input, validation, method, endpoint, timeout, success condition, required
+fields, bounded output, one failure result per failure kind) and predict the
+request and response **before** anything runs.
+
+A gate passes only if the learner can classify a failure they were not shown
+during teaching.
 
 ---
 
@@ -86,6 +127,12 @@ multi-agent handoff
 evaluation
 guardrail
 execution trace
+API boundary
+request/response
+status code
+timeout
+response validation
+external data as observation
 ```
 
 Do not require LangGraph/CrewAI API syntax.

@@ -7,9 +7,12 @@ The plan is intentionally capped. If you exceed a day's timebox, cut optional im
 ### Practical total
 
 ```text
-3-day core: about 14–16 focused hours total
+3-day core: about 15–17 focused hours total
 4-day preferred: same core + about 3–4 hours consolidation
 ```
+
+Day 1 is the heaviest day because it carries the only implementation work in
+the sprint, including the one external-API segment.
 
 Do not spend more than about one hour per day on academic reading. The readings are there to establish the mental model; the quizzes and transfer exercises prove whether you can use it.
 
@@ -24,21 +27,30 @@ Complete the same three core days, then use Day 4 for retrieval, transfer, and a
 
 ---
 
-# Day 1 — Agents, LLM Boundary, Tool Loop
+# Day 1 — Agents, LLM Boundary, Tool Loop, External API Boundary
 
-**Timebox:** 5–5.5 hours
+**Timebox:** 6–6.5 hours
 
 ```text
 45–60 min  official reading
-60 min     fundamentals + drawings
-30 min     quiz / remediation
-90 min     tiny implementation
-45 min     trace + changed variant + failure case
-30 min     closed-code exit gate
+60 min     agent/tool fundamentals + drawings
+30 min     Day 1A quiz / remediation
+75 min     deterministic implementation (Patches 1–4)
+30 min     trace + changed variant + failure case
+25 min     API boundary fundamentals + request/response drawing
+15 min     Day 1B API quiz / remediation
+35 min     one external read-only API tool (Patch 5) + two failure demos
+30 min     closed-code exit gate (deterministic loop and API path)
 15–30 min  buffer
 ```
 
-**Goal:** Understand what an agent is before treating an LLM framework as the agent.
+Day 1 is the longest day in the sprint. It is the only day that carries
+implementation, and the API segment is deliberately placed here rather than
+given a day of its own.
+
+**Goal:** Understand what an agent is before treating an LLM framework as the
+agent, and understand what actually happens when one of its tools reaches a
+service you do not own.
 
 ## Academic reading — CORE
 
@@ -70,9 +82,9 @@ bounded execution
 
 See `FUNDAMENTALS.md` sections A–C.
 
-## Quiz — CORE
+## Quiz 1A — CORE
 
-Take Day 1 quiz from `QUIZ_PROTOCOL.md`.
+Take the Day 1A quiz from `QUIZ_PROTOCOL.md`.
 
 ## Related to Trellis — after the quiz
 
@@ -93,26 +105,155 @@ handle_agui_request
 
 Use the pinned, symbol-level links in `TRELLIS_CODE_MAP.md` under **Day 1 — Agent, state, tools, loop, and authority**. Before opening the code, predict which component chooses the action, which component has authority to allow it, what state changes, what evidence is written, and what a repeated identical tool call should do.
 
-## Tiny implementation — CORE
+## Deterministic implementation — CORE
 
-Build only after the quiz passes:
+Build only after the Day 1A quiz passes:
 
 ```text
 deterministic model-decision stub
 → explicit while/step loop
-→ one read-only tool
+→ one read-only deterministic tool
 → tool-result observation
 → explicit stop condition
 → trace record
 ```
 
-Do **not** add memory, RAG, LangGraph, CrewAI, or a database.
+This is Patches 1–4 in `IMPLEMENTATION_PLAN.md`.
 
-A live LLM call is optional. If used, it comes **after** the deterministic loop is understood.
+Do **not** add memory, RAG, LangGraph, CrewAI, a database, or a network call
+here. The deterministic tool comes first so the loop can be understood with no
+networking in the picture.
+
+Trace it, run one changed input, and force one failure before going further.
+
+---
+
+## External API boundary — CORE
+
+Only once the deterministic loop above traces correctly.
+
+The point of this segment is one boundary, not API development:
+
+```text
+agent decision
+→ proposed tool call
+→ application validates input
+→ tool constructs HTTP request
+→ external API
+→ HTTP response
+→ validate/interpret response
+→ tool result
+→ agent observation
+→ next agent decision
+```
+
+### Fundamentals — CORE
+
+Be able to explain:
+
+```text
+API / API boundary
+client vs server
+request vs response
+HTTP
+GET
+endpoint / URL
+path parameter vs query parameter
+status code, success vs non-success
+JSON response body
+parsing the body
+timeout
+network/transport failure
+HTTP error response
+malformed/unexpected response data
+input validation before the request
+response validation after the request
+external data as observation/evidence, not authoritative state
+```
+
+See `FUNDAMENTALS.md` section C2.
+
+Then draw, on paper:
+
+```text
+request → response → validation → tool result → observation
+```
+
+and state the tool contract — input, output, state read/written, authority
+owner, external dependency, stop condition, failure behavior, evidence — before
+any code exists.
+
+### Quiz 1B — CORE
+
+Take the Day 1B quiz from `QUIZ_PROTOCOL.md`. Do not inspect or write the API
+tool until it passes.
+
+### Implementation — CORE
+
+One patch only. This is Patch 5 in `IMPLEMENTATION_PLAN.md`:
+
+```text
+one public read-only endpoint, no credentials
+one GET request
+at most one simple input
+explicit timeout
+input validation before sending
+status-code check
+JSON parse + minimal shape validation
+bounded result returned to the agent
+```
+
+Do **not** add an API server, FastAPI, a write method, OAuth, API keys,
+retries, pagination, webhooks, a generic client abstraction, a database, or a
+frontend.
+
+### Failure demos — CORE
+
+Deliberately produce and inspect at least:
+
+1. one network/transport failure (unreachable host or a very small timeout);
+2. one non-success HTTP response (a well-formed input the service does not have).
+
+Then name which of the five failure kinds in `FUNDAMENTALS.md` section C2 each
+one was, and what evidence in the trace proves it.
+
+### Related to Trellis — after the failure demos
+
+Trellis reaches exactly one external service, Linear, and funnels every outbound
+call through one function. Use `TRELLIS_CODE_MAP.md` under **Day 1B — The
+external API boundary** to see the same five failure kinds in code you own,
+plus three things a public postal-code lookup cannot show: a `200 OK` that is
+still a refusal, one timeout with a deliberate no-retry rule, and an error
+object that must not be logged whole.
+
+Predict the four transfer-check answers before opening `linear_agent_api.py`.
 
 ## Exit test — CORE
 
-Close the code and draw the loop from memory. Explain what state changes after every step.
+Close the code. From memory:
+
+1. draw the loop and say what state changes after every step;
+2. draw the full request/response path end to end;
+3. distinguish tool-input validation failure, network/transport failure,
+   HTTP/API error, response-shape/data failure, and agent-loop/control-flow
+   failure.
+
+## If Day 1 runs long
+
+Cut in this order, and stop as soon as you are back inside the timebox:
+
+```text
+1. the optional live-LLM swap (it is already the lowest-priority patch)
+2. writing the API tool yourself — inspect and trace a supplied one instead
+3. the deterministic loop's optional extra trace fields
+```
+
+Never cut the API concepts, the Day 1B quiz, or the two failure demos. Per
+`CLAUDE.md`, implementation scope is reduced before conceptual coverage.
+
+If the network is unavailable, the concepts, the quiz, the transport-failure
+demo, and the exit test all still work; substitute a recorded response body for
+the success path.
 
 ---
 
@@ -259,6 +400,12 @@ tool failure
 repeated/looping action pressure
 unsafe/out-of-authority request
 ```
+
+For the tool-failure scenario, reuse the Day 1 API tool and treat the external
+failure kinds separately — transport failure, non-success HTTP status, and
+bad/unexpected response shape are three different scenarios wearing one name.
+This adds no new implementation; the failures were already demonstrated on
+Day 1.
 
 For each specify **before running**:
 

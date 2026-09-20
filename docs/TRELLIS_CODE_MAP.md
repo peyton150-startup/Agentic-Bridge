@@ -77,6 +77,39 @@ Before reopening the code, predict the outcome of a repeated `create_task` call 
 
 ---
 
+## Day 1B — The external API boundary
+
+Use this after the Day 1B quiz in `QUIZ_PROTOCOL.md` passes. The postal-code exercise in `IMPLEMENTATION_PLAN.md` Patch 5 teaches the boundary with one `GET`; this section is the same boundary in code the learner already owns, with credentials and a remote side effect in the picture.
+
+Trellis reaches exactly one external service, Linear, and every outbound call funnels through one function.
+
+### The five failure kinds, in real code
+
+| Failure kind | Trellis location | What it does |
+|---|---|---|
+| tool-input validation | typed tool args + [`policy.check`](https://github.com/peyton150-startup/Trellis_AI_Chatbot_Task_Manager/blob/11cf50bc5882b71062b65e83f436b2e9317354b1/backend/app/policy.py#L95-L192) | refuses before any request is built |
+| network/transport | [`_request`](https://github.com/peyton150-startup/Trellis_AI_Chatbot_Task_Manager/blob/11cf50bc5882b71062b65e83f436b2e9317354b1/backend/app/linear_agent_api.py#L493-L541) catches `httpx.HTTPError` and raises `LinearApiError(operation, None, ...)` | **`status=None` is the marker**: "Linear was unreachable", not "Linear said no" |
+| HTTP/API error | [`_post_graphql`](https://github.com/peyton150-startup/Trellis_AI_Chatbot_Task_Manager/blob/11cf50bc5882b71062b65e83f436b2e9317354b1/backend/app/linear_agent_api.py#L443-L490) and [`_post_token`](https://github.com/peyton150-startup/Trellis_AI_Chatbot_Task_Manager/blob/11cf50bc5882b71062b65e83f436b2e9317354b1/backend/app/linear_agent_api.py#L409-L440) check `status_code != 200` before touching the body | a response arrived and was refused |
+| response shape/data | same two functions: `response.json()` guarded by `except ValueError`; then the GraphQL `errors` array; then `data` must be a `dict` | a `200` whose body is unusable |
+| agent-loop/control-flow | [`linear_agent_worker._drain_until_stopped`](https://github.com/peyton150-startup/Trellis_AI_Chatbot_Task_Manager/blob/11cf50bc5882b71062b65e83f436b2e9317354b1/backend/app/linear_agent_worker.py#L924-L942) | stop signal, idle wait, unexpected-failure path |
+
+### Three points the postal-code exercise cannot make
+
+1. **A success status is not a success.** A Linear GraphQL refusal arrives as **HTTP 200 with an `errors` array**. Code that checked only the status would read a null `data` and call it a result. `_post_graphql` checks status, then `errors`, then `data`, in that order.
+2. **One timeout, one place.** `_request` reads `settings.linear_http_timeout_seconds` and builds its transport with `retries=0` explicitly. Per its own docstring, the reason is that a connection dying after transmission leaves two states the code cannot tell apart — never received, or committed and the response lost — so a retry would be a guess. Compare this with `idempotency.acquire` on the Trellis side of the boundary: **you can make your own side effects replay-safe; you cannot assume someone else's are.**
+3. **Errors carry data.** Only the documented `message` of the first GraphQL error is surfaced, because the rest of the error object can echo the query and the variables of a token-bearing request. Evidence must be useful without leaking credentials.
+
+### Day 1B transfer check
+
+Before reopening the code, predict:
+
+1. Linear is unreachable (no network). Which function raises, what is `status`, and how does a caller tell this apart from a refusal?
+2. Linear returns `200` with `{"errors": [{"message": "Entity not found"}]}`. Which of the five failure kinds is that, and which check catches it?
+3. `agentActivityCreate` times out after the request was transmitted. Why does Trellis *not* retry, and what would have to be proven before retrying would be safe?
+4. Name the one thing this boundary owns that the deterministic `lookup_word` tool in `code/tiny_agent.py` never needs, and say why.
+
+---
+
 ## Day 2 — Context, state, memory, evidence, and RAG
 
 ### Best concrete example: server-owned continuity

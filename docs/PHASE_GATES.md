@@ -22,6 +22,34 @@ Without notes:
 
 ---
 
+## Gate 1B — Day 1 External API Tool Boundary
+
+Taken after Gate 1 and after the API failure demos. Without notes:
+
+1. Draw the full path: agent decision → proposed tool call → input validation →
+   HTTP request → external service → HTTP response → response validation →
+   tool result → observation → next decision.
+2. Name the client and the server, and say which side you own.
+3. Identify the path parameter and the query parameter in an endpoint, and say
+   what each is for.
+4. Explain why a `404` is a successful conversation and an unsuccessful lookup.
+5. State which validation runs before the request and which runs after, and
+   what each prevents.
+6. Explain what the timeout bounds and why the loop depends on it.
+7. Distinguish the five failure kinds — tool-input validation, network/transport,
+   HTTP/API error, response shape/data, agent-loop/control-flow — and say, for a
+   failure you were not shown, which one it is and what evidence proves it.
+8. Explain why the response is an observation rather than authoritative state or
+   a permission grant.
+
+**Pass:** the learner can classify an unseen failure correctly and can explain
+why the external call sits behind the tool boundary instead of in front of it.
+
+Failing this gate is not a reason to extend the sprint. Record it as a CMU
+watch item and continue to Day 2.
+
+---
+
 ## Gate 2 — Day 2 Memory / RAG
 
 Without notes:

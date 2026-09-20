@@ -22,6 +22,15 @@ tool/action contract
 bounded control loop
 authority
 trace
+
+then, once the deterministic loop traces:
+
+API/HTTP boundary behind one tool
+request/response, status, JSON parsing
+validation before the request and after the response
+timeout
+five distinguishable failure kinds
+external data as observation, not authority
 ```
 
 ## Day 2

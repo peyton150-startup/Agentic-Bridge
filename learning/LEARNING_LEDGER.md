@@ -300,7 +300,21 @@ RESULT: pass
 
 Agent now distinguishes rejected-at-the-door from searched-and-absent, and every stop leaves evidence.
 
-**Resume here:** Day 1 exit test / Gate 1 (closed code, 7 items incl. new-domain read-only tool contract for a music app). Open side item: Trellis duplicate-task `tool_invocations` query.
+### 2026-09-20 / Day 1 — Exit test (Gate 1), closed code
+
+1. **Vocabulary:** agent, environment, state, action/tool correct; termination conflated "action stopped" with loop end → corrected to loop-ending condition + label.
+2. **Loop from memory:** correct order (limit check → model → error path → final check → tool path → record → repeat). Two fixes: said the *model* checks word format (it proposes; `is_valid_word` is in the loop); omitted `step + 1` and the implicit loop-back.
+3. **Authority:** correct, unprompted consultant framing ("advises but makes no changes").
+4. **Trace "persistence":** correct sequence; mislabeled pass 1 entry as `kind: final` → pass 1 is `tool`, pass 2 is `final`.
+5. **Invalid input:** correct — `is_valid_word` else-branch, rejection recorded with reason, honest user message.
+6. **max_steps:** correct — not success, guard against infinite loops.
+7. **Transfer (music app read-only tool):** workable contract; designed a single string input requiring parsing → shown to repeat today's `split` crash; two inputs (title, artist) preferred. Failure list initially only format → learner supplied the missing case (song valid but absent) and distinguished it from "can't check".
+
+**Result:** GATE 1 PASS. Day 1 complete (reading, fundamentals, quiz, 4 patches, exit test).
+
+**Watch item status:** model-vs-code authority now answered correctly cold, repeatedly. Keep spot-checking on Days 2–3 but no longer a blocker.
+
+**Next:** Day 2 — memory vs state vs evidence, RAG pipeline (paper exercises). Open side item: Trellis duplicate-task `tool_invocations` query.
 
 ---
 

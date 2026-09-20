@@ -355,7 +355,21 @@ RESULT: predictions for all four demo calls correct cold
 
 Open side item: Trellis duplicate-task `tool_invocations` query.
 
-**Next:** Day 2 — memory vs state vs evidence, RAG pipeline (paper exercises).
+### 2026-09-20 / Day 2 — Reading + categories + start of RAG
+
+**Reading:** learner correctly objected that the CMU program page and 11-768 page are course *descriptions*, not content. Agreed: they supply vocabulary and scope only (per `SOURCES.md`); conceptual work comes from CS188 plus worked exercises. Took from them: CMU lists memory and RAG as separate topics; 11-768 lists memory and tool use as separate capabilities.
+
+**World vs search state:** for "what does 'agent' mean?" learner said "just the most recent history" → narrowed to the word asked about plus observations so far; mapped to the existing `AgentState`. On "is PostgreSQL memory?" learner answered **"it must first be read into context"** — the key distinction of Day 2, unprompted.
+
+**Classification (10 items): 10/10 cold.** Items 6–10 included the hard cases: browser-supplied "user approved deletion" (evidence), model-written note saved to a table (non-authoritative memory), fetched page containing "ignore previous instructions" (evidence), system instructions, approvals row (authoritative). Explanations for 6 and 7 were correct and unprompted ("the model does not write authoritative state, only the code can").
+
+**One nuance corrected:** called system instructions authoritative durable state ("sounds like my prompts.py") → they are trusted because you deploy them, but they arrive as **current context**, not state; test used: can a user's action change it?
+
+**RAG pipeline started.** Chunking: "easier to retrieve" → added context limits and precision. Why dict/set cannot match "reset my password" to "credential recovery": learner first said the text was too large for one entry → corrected to exact-match lookup (locker recipe on exact text; no shared words). Embeddings taught as position-not-understanding; learner's "weighted based on certain categories" corrected (hundreds of dimensions, not human-named, learned not chosen).
+
+**Paper similarity exercise:** dot products computed correctly cold (0.18 and 0.78), ranked all three, identified what k=1 retrieves.
+
+**Resume here:** risks of k=1 vs k=50 → chunking effects → retrieval vs generation failure → Day 2 quiz + Gate 2 → Trellis Day 2 section (server-owned history; why it is not RAG).
 
 ---
 

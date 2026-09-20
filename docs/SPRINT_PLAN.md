@@ -319,6 +319,8 @@ See `FUNDAMENTALS.md` sections D–E.
 2. Do one small vector-similarity exercise on paper before using code.
 3. Given three retrieval results, identify whether the answer failure came from retrieval or generation.
 
+**Concept extension (paper only, no code):** imagine a filter step between retrieval and generation that asks yes/no questions of each passage — relevant? contains usable evidence? contradicts the query's premise? tries to instruct the system? (TypeSafe's RAG passage cookbook is one tooling example; it is not a curriculum source.) For your three results, answer: which failures would this step catch, which would it miss, and does it change whether the failure is a retrieval or generation failure?
+
 ## Optional tiny code
 
 Only if time remains and the paper exercise is correct:
@@ -415,6 +417,8 @@ For each specify **before running**:
 - evidence you would inspect;
 - pass/fail criterion.
 
+**Concept extension (paper only):** give the stub decision a made-up confidence value and add one confidence-gated rule (for example, below 0.6 → stop and escalate). Predict how each of the five scenarios changes. If the optional TypeSafe swap (Patch 6) is used later, see the TypeSafe notes in `EVALUATION_PLAN.md`.
+
 ## Multi-agent design exercise — CORE
 
 Take one problem and propose:
@@ -426,6 +430,8 @@ two-agent design
 ```
 
 Defend whether the second agent solves a real coordination/decomposition problem or merely adds complexity.
+
+**Concept check:** the handoff is a routing decision — classify the request, pick one handler. Tools like TypeSafe's "intent routing" pattern do exactly this with a Choice. Ask: is your second agent a real agent (own state, actions, termination), or just a branch a single agent's router could take?
 
 No multi-agent code is required.
 
@@ -478,6 +484,7 @@ agent/tool action      node/tool step
 loop continuation      cycle/next step
 stop condition         terminal/end state
 handoff                 multi-agent routing
+low-confidence branch  confidence-gated routing (e.g. TypeSafe Choice + confidence)
 ```
 
 Do not memorize API syntax.
@@ -664,6 +671,8 @@ prediction on one example
 passed changed-example quiz
 one agreed small patch boundary
 ```
+
+If time remains after the vocabulary map, the optional Patch 6 in `IMPLEMENTATION_PLAN.md` (TypeSafe decision swap) is the only place TypeSafe code enters the sprint.
 
 ## 3. Mini-capstone architecture
 

@@ -63,6 +63,8 @@ loop behavior can be tested without transport failure in the picture, and so
 that a failing run can be attributed to the loop or to the external boundary
 rather than to both at once.
 
+**Swap test:** replacing the stub with a live decision model (the optional Patch 6 in `IMPLEMENTATION_PLAN.md`) should change only the decision function. Any required change to state, loop, validation, tool, or trace is evidence that this rule was violated.
+
 ## 6. Evidence Is Part of the Design
 
 The trace must allow the learner to reconstruct why each step occurred.

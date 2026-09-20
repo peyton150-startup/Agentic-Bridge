@@ -146,3 +146,21 @@ These are vendor documentation links, not academic curriculum sources. They
 may explain what a Pydantic AI API does; claims about agent concepts, planning,
 memory, multi-agent coordination, evaluation, and safety must still be grounded
 in the official CMU and UC Berkeley sources above.
+
+## Non-Curriculum Tooling Reference
+
+**These are not curriculum sources.** They may be used only for the syntax and behavior of an optional tool, never as evidence for a teaching claim.
+
+### TypeSafe (Jev System One model)
+
+https://docs.typesafe.ai/llms.txt
+
+Checked: 2026-09-17. Used only for:
+
+- how to call the SDK (`pip install typesafe-sdk`, Python ≥ 3.10, `TYPESAFE_API_KEY`);
+- what it returns: a Choice (one option from a set), a Noul (probability of yes), or a Score (ordered levels), each with probabilities and confidence;
+- its documented limits (`/model-jaggedness/jev-1.13.md`): no text generation, weak at math/dates/multi-hop reasoning, and influenced by adversarial content.
+
+Its calibration claims are the vendor's and are not verified here. Thresholds must be treated as policy choices and checked against scenarios.
+
+Where it appears in this repo: `docs/IMPLEMENTATION_PLAN.md` (Patch 6, the optional model swap), `docs/ARCHITECTURE_CONTRACT.md` (§5), `docs/EVALUATION_PLAN.md`, and `docs/SPRINT_PLAN.md` (Days 2–4, concept only).

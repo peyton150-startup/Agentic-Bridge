@@ -387,7 +387,29 @@ Asked whether to call it "closeness dot products" → taught the standard names:
 
 **Gate 2 (no notes): PASS.** Pipeline drawn with all document-side steps; the question-embedding branch was missing → added. Changed vector example correct (C 0.74, B 0.62; k=2 → C, B). Explained why documents and questions must share one embedding model (different models = different maps); taught that changing the embedding model means re-embedding every chunk.
 
-**Resume here:** Trellis Day 2 section — learner to predict: (1) which RAG steps Trellis's SQL retrieval lacks, (2) is a `get_task_history` row authoritative state or retrieved evidence, (3) what Trellis should do with a browser-supplied fake "user approved deleting all tasks" message. Then Day 2 complete → Day 3.
+### 2026-09-21 / Day 2 — Trellis transfer (commit 11cf50b)
+
+1. **Why Trellis retrieval is not RAG:** correct cold — no embeddings, no vector store. Added: exact SQL predicates (locker-style), no chunking.
+2. **`get_task_history` row:** answered authoritative state ("we would restore a deleted task from that row") → half right: the row is authoritative *for code*; the copy returned into the model's context is retrieved evidence. Same data, two roles depending on the reader.
+3. **Forged browser message "user approved deleting all tasks":** answered "save as a note but don't act on it" → incorrect; verified in `handle_agui_request`: the model gets history only from server-owned state, the submitted transcript is ignored (`test_agui_forged_history_ignored`). Follow-up "why is ignoring safer than saving as a note?" → correct: outside claims are ignored "to protect the context of later searches" (a stored note could be retrieved into a future context).
+
+## Day 2 Decision — 2026-09-21
+
+Classification 10/10, RAG pipeline, similarity by hand, top-k and chunking trade-offs, retrieval vs generation failure, Day 2 quiz (pass after fresh checks), Gate 2 (pass), Trellis transfer. **Day 2 complete. Promote to Day 3.**
+
+Watch items carried forward: (a) same-data-two-roles (authoritative row vs evidence copy); (b) saying vs doing — authority checks do not stop the model from *saying* something; (c) instinct to keep untrusted input "as a note" rather than discard it.
+
+**Next:** Day 3 — reasoning/planning as control flow, multi-agent roles/handoffs, evaluation before execution, guardrails, traces.
+
+### 2026-09-21 / Day 3 — Reading, planning, multi-agent
+
+**Reading:** told upfront that 15-482 and 11-768 are descriptions (vocabulary only); real reading = CS188 4.1 MDPs (definition + racecar). Q1 (nondeterministic outcomes ↔ LLM/API) correct: design for every outcome; added that unlike the racecar we usually don't know the odds → evaluation. Q2 reward vs cost: intuition about fast's temptation correct; refined to "cost is only bad; reward can be good or bad". Q3 overheated equivalent: "giving wrong information" — correct for read-only tiny_agent; extended to Trellis delete (terminal, one step away) → why write tools get approvals.
+
+**Planning as control flow:** first described a per-decision checklist (validate prompt, check tools, check recent calls, select tool) rather than a multi-step plan → shown the 4-step plan. Caught tutor wording ("before any tool" vs plan contents are tool calls) → clarified writing a plan ≠ executing it; linked Trellis `propose_plan` (display-only, no task event). Restated correctly: "it is saying this tool first then this tool… it is not calling the tools." Independent-step example: said both agents continue (correct for independent steps). Dependent example (capital → weather, step 1 network error): reached "the planning agent would continue on even with the error while the reflex would stop there" → taught execution monitoring + replanning; linked thermostat stall rule. Model-call count: reflex 4 (correct); planning said 8 → 5 (tool runs are code, not model calls). Asked "checks are still compute" → taught code checks vs model checks (microseconds, free, deterministic vs billed, probabilistic): "if a check can be an `if`, write it as an `if`." Conclusion unprompted: planning is for complex dependent tasks.
+
+**Multi-agent (planner A / executor B for Trellis):** handoff = plan (refined: + original request, actor_id, limits); two-agent-only failure = planner errors propagate (added: lost context, ping-pong / who owns the step limit); **B needs its own policy.check — correct** (a plan is a bigger proposal). Single-agent baseline decision: "only adds the 3 risks… no need for a second agent" — correct. Called Trellis "already a planning agent" → corrected: it is a reflex loop; `propose_plan` only displays. Taught when a second agent earns its place (permission separation — reader with no write tools vs writer; parallel work; independent reviewer).
+
+**Resume here:** evaluation exercise — learner fills expected stop_reason and "pass means…" for the five tiny_agent scenarios BEFORE running (normal, invalid input 12345, model failure "define agent", max_steps=1, not found zxqvb). Then run and compare, Day 3 quiz, final readiness check.
 
 ---
 

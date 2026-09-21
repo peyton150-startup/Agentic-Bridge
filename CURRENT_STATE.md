@@ -2,9 +2,9 @@
 
 ## Lifecycle
 
-**Current stage:** Day 2 — memory and RAG fundamentals
+**Current stage:** Day 3 — reasoning, multi-agent, evaluation, safety
 
-Day 0 diagnostic passed 2026-09-18; Day 1 and Gate 1 passed 2026-09-20 (see `learning/LEARNING_LEDGER.md`).
+Day 0 diagnostic passed 2026-09-18; Day 1 and Gate 1 passed 2026-09-20; Day 2 and Gate 2 passed 2026-09-21 (see `learning/LEARNING_LEDGER.md`).
 
 ## Time Constraint
 

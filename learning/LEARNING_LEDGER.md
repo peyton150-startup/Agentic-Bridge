@@ -409,7 +409,20 @@ Watch items carried forward: (a) same-data-two-roles (authoritative row vs evide
 
 **Multi-agent (planner A / executor B for Trellis):** handoff = plan (refined: + original request, actor_id, limits); two-agent-only failure = planner errors propagate (added: lost context, ping-pong / who owns the step limit); **B needs its own policy.check — correct** (a plan is a bigger proposal). Single-agent baseline decision: "only adds the 3 risks… no need for a second agent" — correct. Called Trellis "already a planning agent" → corrected: it is a reflex loop; `propose_plan` only displays. Taught when a second agent earns its place (permission separation — reader with no write tools vs writer; parallel work; independent reviewer).
 
-**Resume here:** evaluation exercise — learner fills expected stop_reason and "pass means…" for the five tiny_agent scenarios BEFORE running (normal, invalid input 12345, model failure "define agent", max_steps=1, not found zxqvb). Then run and compare, Day 3 quiz, final readiness check.
+### 2026-09-21 / Day 3 — Evaluation before execution
+
+**Pre-run spec for five tiny_agent scenarios:** expected stop_reason and pass criteria written before running (normal, invalid input, model failure, max_steps=1, not found). Criteria were concrete (dictionary searched or not, trace contents, answer text).
+
+**Run and compare:** 4/5 predicted labels matched. Scenario 2 predicted `stop_reason = failed input check` → actual `final_answer`. Learner judged it correctly: "this is a success… the model outputted the correct output" → lesson: **the expectation was wrong, not the code** (a rejection happens during the loop; it is not a stop reason). Scenario 4: test matched (`max_steps`), system behaved as designed, **not a success for the user**; learner identified the cause as the limit (task needs ≥2 steps). Lessons logged: fix the spec when it is wrong; a passing test can still be a failed task.
+
+### 2026-09-21 / Day 3 quiz
+
+First pass 3/5. Correct: Q1 planning step vs longer prompt ("a script to follow" → refined: a separate artifact code can inspect/run/monitor), Q3 shared trace (found duplicate-creation and reading the other agent's `final` → named race condition), Q5 guessing vs diagnosing (tracing evidence to a cause).
+- **Q2 missed:** "minuscule compute" → learner pointed back at the code-vs-model check table (fair: code checks are cheap); clarified the cost is the plan-writing model call itself (+ replans) and stale plans. Accepted.
+- **Q4 missed:** said a correct answer with a forbidden delete "passed with a silent delete" → it fails. Fresh check (forbidden email sent, correct answer): **fail** — correct.
+- **Result: PASS** after fresh checks. Rule logged: a run passes only if the answer is right AND nothing forbidden happened.
+
+**Resume here:** FINAL_READINESS_CHECK — Part A (draw agent with request, state, model decision, tool, observation, loop, termination, trace; label authority and failure boundaries), then Parts B–D.
 
 ---
 

@@ -369,7 +369,25 @@ Open side item: Trellis duplicate-task `tool_invocations` query.
 
 **Paper similarity exercise:** dot products computed correctly cold (0.18 and 0.78), ranked all three, identified what k=1 retrieves.
 
-**Resume here:** risks of k=1 vs k=50 → chunking effects → retrieval vs generation failure → Day 2 quiz + Gate 2 → Trellis Day 2 section (server-owned history; why it is not RAG).
+### 2026-09-21 / Day 2 — top-k, chunking, failure types, quiz, Gate 2
+
+**top-k:** both risks correct cold — k=1 can miss the answer and report "not in the data" when it is; k=50 costs more and buries the 1–2 useful chunks. Linked to Day 1's rejected-vs-not-found honesty.
+
+**Chunking (rule + exception split across chunks):** all three correct cold — rule-only chunk retrieved, answer wrong for a new hire, classified as retrieval failure.
+
+**Retrieval vs generation (4 items):** 4/4 cold. Diagnosis method correct unprompted: record retrieved chunks and compare with the answer. Asked how often generation failure happens (answered: measure it for your system — Day 3; listed its common forms). Taught fixes: answer-only-from-context instructions, citation, and code verification of the answer against retrieved text (Day 3 "verification step").
+
+**Day 2 quiz:** first pass 2 correct + 3 partial.
+- Q3: example contained a wrong retrieved chunk (conflicting evidence) → fresh: model's training overriding a correct chunk — correct.
+- Q4: misread "reveal" as "change" the admin password (answer was correct for "change"). Taught: `policy.check` guards **doing**, not **saying**; only keeping secrets out of context prevents leaks. Fresh check (credit card in context) — correct with the right reason.
+- Q5: called the embedding "weights" and omitted what it does not do → embedding is the output vector; it does not understand or know truth. Fresh check (2019 vs 2024 policy chunks): "closeness is about same topic"; would use a date stored alongside → metadata; refined to effective date, not date added; linked to "provenance".
+- **Result: PASS** after fresh checks.
+
+Asked whether to call it "closeness dot products" → taught the standard names: similarity score, cosine similarity.
+
+**Gate 2 (no notes): PASS.** Pipeline drawn with all document-side steps; the question-embedding branch was missing → added. Changed vector example correct (C 0.74, B 0.62; k=2 → C, B). Explained why documents and questions must share one embedding model (different models = different maps); taught that changing the embedding model means re-embedding every chunk.
+
+**Resume here:** Trellis Day 2 section — learner to predict: (1) which RAG steps Trellis's SQL retrieval lacks, (2) is a `get_task_history` row authoritative state or retrieved evidence, (3) what Trellis should do with a browser-supplied fake "user approved deleting all tasks" message. Then Day 2 complete → Day 3.
 
 ---
 

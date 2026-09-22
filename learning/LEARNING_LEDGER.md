@@ -432,6 +432,26 @@ Reference drawing given at end of session. **Watch item:** reconstructing loop *
 
 **Resume here:** learner redraws Part A **cold** (no reference) with all eight pieces, the three stop points, trace-write points, authority label and failure-kind labels. Then Part B (15 core questions — many already covered; ask only the unseen ones), Part C (unseen transfer problem), Part D (CMU vocabulary). Passing Part A–D completes the 3-day core; Day 4 is optional (vocabulary map incl. Pydantic AI unit, mini-capstone, mock lab, delayed retrieval).
 
+### 2026-09-22 / Final readiness check — Part A loop redraw (new session)
+
+**Cold redraw 1:** state before loop (fixed), validation between model and tool (fixed), authority = code, trace after tool result. Still missing: loop-back, three stops (termination only at end). Invalid proposal described as "prints out".
+
+**Hint questions:** max_steps at top — correct; `step + 1` + loop-back — correct unprompted. Placed model_error "in the code guards" and final_answer "at the bottom after guards and tool". Model-crash placement derived correctly once asked "is there a proposal to check?". Final-check order confusion traced to vocabulary: learner thought `kind == final` *was* the guard → taught **router vs guard** (routing sends every output somewhere; guard approves/rejects tool proposals only) and **error handling** (crash check) vs guard.
+
+**Cold redraw 2 (confidence: medium):** order fully correct — max_steps → model → crash → final → validation → tool → result → trace → step+1 → back to top. Labelled the crash check "guard" (naming only; corrected).
+
+**Trace writes / invalid branch:** model_error writes the error — correct. Invalid proposal: loop continues — correct; did not say the tool is skipped or that the observation is `rejected + reason`, and said the model then sets kind to final (it *may*: it can also retry a corrected proposal). STOP 3 write not stated precisely (it is the final answer, not proposal + observation).
+
+**Result: Part A loop — PASS with watch item** (vocabulary: router / guard / error handling; trace contents at each stop). Next: Part A second half (tool → HTTP path).
+
+### 2026-09-22 / Part A second half — HTTP path (in progress, NOT yet passed)
+
+**First attempt (learner: "this will be wrong"):** happy path only — validate input → request → response → parse → fields → output. Started at "user inputs", no failure branches, no ownership labels.
+
+**Hint questions:** start (model proposes, code approves, code calls tool) — correct. Timeout / bad JSON / missing fields: said each "stops the module" → **misconception: tool failures stop the program.** Shown `api_tool.py`: every failure is a `return {"error": ...}` (invalid_input / network / http / shape) → observation → trace → loop continues; same lesson as the rejected proposal. 404/500 skipped — went straight to JSON decode; taught the status check comes before parsing. "Output to the cmd" → that is the standalone demo `print`s; inside the agent the result is an observation and only the final answer reaches the user.
+
+**Resume here:** learner redraws the HTTP path cold (file closed): steps incl. status check before parse, where each of the four failure kinds is caught, model/code/external labels, the one participant not owned (the external service) and what that implies, confidence. Then Parts B–D.
+
 ---
 
 ## CMU Watch Items

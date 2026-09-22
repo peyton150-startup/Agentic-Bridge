@@ -58,6 +58,23 @@ error/evidence
 
 Only then map those mechanisms to framework terms.
 
+## Diagram Rule
+
+The learner finds text diagrams very helpful. When explaining a flow, loop, pipeline, or who-owns-what, prefer a plain-text diagram in a `text` code block over prose, for example:
+
+```text
+LOOP:
+    step >= max_steps?  → STOP max_steps      [code]
+    model decision (proposal)                 [model — proposes only]
+    validate proposal                         [code — AUTHORITY]
+    trace ← proposal + observation            [the notebook]
+    step + 1  ↺ back to top
+```
+
+Label each box with **who owns it** (model / code / external) and mark where it can stop or fail. Side-by-side comparison tables work well for contrasts (code check vs model check, reflex vs planning).
+
+When quizzing recall, do not show the diagram first: have the learner draw it cold, then show the reference.
+
 ## Quiz Rule
 
 Use retrieval and transfer questions, not recognition-only questions.

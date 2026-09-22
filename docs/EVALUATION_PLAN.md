@@ -87,6 +87,46 @@ purpose. "The API failed" does not tell you whether a request left the machine,
 whether the service answered, or whether your own parsing was wrong — and those
 three call for different fixes.
 
+## Optional Extension X — Scenarios and Failure Classes
+
+Only if Extension X is done. These are defined before running, like the five
+above, and do not replace them.
+
+### Scenarios
+
+```text
+X1-a  valid read                 GET returns 200 and the expected body
+X1-b  valid create               POST returns 201 and the state contains the new item
+X1-c  malformed request          422, state unchanged
+X1-d  domain-invalid request     400/409, state unchanged
+X2-a  valid event                2xx, exactly one side effect
+X2-b  malformed event            422, no side effect
+X2-c  duplicate event            2xx both times, still exactly one side effect
+```
+
+For each, "state unchanged" or "exactly one side effect" is part of the PASS
+condition. A correct status with the wrong state is a FAIL.
+
+### Failure classes by direction
+
+Keep the three directions apart. Do not flatten them into "the API failed."
+
+```text
+Outbound (Patch 5)   our validation → transport/network → remote HTTP response
+                     → remote data shape → agent/control flow
+
+Inbound (X1)         request reaches server → routing → request/schema validation
+                     → application/domain validation → domain operation
+                     → response mapping
+
+Webhook (X2)         sender → network → receiver → authenticity (concept)
+                     → schema validation → duplicate/replay check
+                     → business handling → acknowledgement
+```
+
+Each stage in a chain produces different evidence. Record which stage failed,
+not just that a request did.
+
 ## What Evaluation Does Not Prove
 
 Five scenarios do not prove production reliability. The exercise proves that you understand how to define behavior, execute a scenario, and use evidence to judge whether the system met the intended contract.

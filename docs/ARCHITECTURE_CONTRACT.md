@@ -50,6 +50,27 @@ An external response is a claim made by another program at one moment. It is an
 observation, subject to clause 2: it does not become authoritative state by
 arriving, and it never grants the agent authority it did not already have.
 
+## 3c. Inbound Requests and Events Meet a Thin Adapter (optional Extension X only)
+
+This clause applies to the optional Extension X service, not to the agent. The
+agent's tools remain read-only. The extension's `POST` endpoints change in-memory
+state because a server that accepts writes is the thing being studied.
+
+```text
+the HTTP adapter (route handler) parses, calls, and maps. It holds no business rules
+schema validation runs before any domain function is called
+domain functions own business rules and authoritative changes, and never import the framework
+every state change is validated first, then applied
+an inbound event is evidence (clause 3b): it is validated and interpreted, not obeyed
+event handling that has a side effect is idempotent per event_id
+a 2xx acknowledgement claims receipt only, not completed downstream work
+delivery is never assumed to be once-only or in order
+```
+
+The same domain function should be reachable from an HTTP request, a webhook,
+or an agent tool and enforce the same rules in all three. If it cannot be, the
+rules are living in the adapter.
+
 ## 4. Loop Is Bounded
 
 Every run has an explicit maximum-step bound and a defined termination reason.

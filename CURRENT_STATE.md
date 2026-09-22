@@ -56,6 +56,14 @@ one read-only external HTTP tool
 
 A live LLM is optional during the sprint and is the lowest-priority patch. The loop must be understood **before** a provider is swapped in, and the deterministic tool must be understood **before** a network call is added.
 
+## Optional Extension X — added 2026-09-21, not started
+
+A FastAPI server (X1) and a local simulated webhook receiver (X2) are defined as
+an **optional** extension after Gate 1B, about 2.5–3 hours. They are not part of
+the 3-day core or the readiness decision, and no extension code exists yet. The
+core scope rule above still applies: the extension may not displace Day 3 or
+Day 4 core items. See `docs/SPRINT_PLAN.md` → Optional Extension X.
+
 ## Exit Target
 
 At sprint end, the learner should have:

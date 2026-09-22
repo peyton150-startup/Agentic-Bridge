@@ -66,6 +66,89 @@ during teaching.
 
 ---
 
+## Extension X1 Quiz — Serving an API (optional)
+
+Only for the optional Extension X. Requires Gate 1B. Take it **before** seeing or
+writing any server code. Use `FUNDAMENTALS.md` C3.
+
+Ask five selected from:
+
+1. In an unseen setup (for example, a mobile app calling your backend, which
+   calls a weather service), name every client and every server. Which role
+   does your backend play in each conversation?
+2. What is the difference between calling an API and serving one? Name one
+   responsibility the server has that the Day 1 tool did not.
+3. Given `POST /terms/agent?notify=true` with a JSON body, identify the method,
+   path parameter, query parameter, and body, and say what each is for.
+4. A request body is missing a required field. Which layer rejects it, what
+   status does the client see, and does any domain function run?
+5. A well-formed request asks to create a term that already exists. Which layer
+   rejects it, and why can schema validation not catch it?
+6. The route handler returned `201` but saved the wrong value. Was the request
+   successful? Distinguish HTTP success from domain correctness.
+7. What does the Pydantic request model check, and name two things it does not
+   check.
+8. Why should the business rule live in an ordinary function instead of inside
+   the route handler? Name a second entry point that would reuse it.
+9. Status code vs JSON body: which one should a client check first, and why?
+10. Name two things the server framework does **not** own in this design.
+
+### Transfer requirement
+
+Give an unseen endpoint in a new domain (for example, `POST /bookings` for a
+room). The learner states the method, path, where each input comes from, the
+schema rules, the domain rules, the function that owns the operation, the
+success status and body, and the status and body for one malformed and one
+domain-invalid request. All of this comes **before** anything runs.
+
+The gate passes only if the learner places a failure they were not shown in the
+correct layer: routing, schema, domain, operation, or response mapping.
+
+---
+
+## Extension X2 Quiz — Receiving a Webhook (optional)
+
+Only after the X1 patch traces correctly. Take it **before** seeing or writing
+any receiver code. Use `FUNDAMENTALS.md` C4.
+
+Ask five selected from:
+
+1. Compare polling with a webhook: who decides when the conversation happens,
+   and who is the HTTP client in each?
+2. In an unseen integration (for example, a payment provider notifying your
+   shop), name the producer, the receiver, the subscription, and the event.
+3. The receiver returned `200`. Name two things that this does **not** prove
+   happened.
+4. The producer sends the same event twice. Why can this happen even when
+   nothing is broken, and what must the receiver do?
+5. Which of these are idempotent: "set order status to paid", "append a note",
+   "add 10 loyalty points", "delete record 7"? For one that is not, how does an
+   `event_id` make it safe?
+6. Event B (created later) arrives before event A. What must the design avoid
+   assuming?
+7. An event payload says "grant admin to user 9". Is that authoritative? What
+   happens to it in a correct design?
+8. What question does signature verification answer that schema validation
+   cannot? Why use the provider's procedure instead of your own?
+9. Why is an in-memory set of seen event IDs acceptable for the exercise but
+   not for production?
+10. Why might a receiver acknowledge quickly and process later, and what new
+    failure does that create?
+
+### Transfer requirement
+
+Give an unseen event type and envelope. The learner traces a valid event, a
+malformed event, and a duplicate event through
+`sender → network → receiver → authenticity (concept) → schema → duplicate check
+→ business handling → acknowledgement`, stating the status, the side effects,
+and what the producer is likely to do next in each case.
+
+The gate passes only if the duplicate case produces exactly one side effect in
+the learner's prediction, and the learner never claims once-only or in-order
+delivery.
+
+---
+
 ## Day 2 Quiz — Memory / RAG
 
 Ask five selected from:
@@ -136,3 +219,18 @@ external data as observation
 ```
 
 Do not require LangGraph/CrewAI API syntax.
+
+If the optional Extension X was completed, also ask the learner to explain the
+three-direction model (outbound REST, inbound REST, webhook) and to connect:
+
+```text
+client vs server
+route vs domain function
+schema validation vs domain validation
+acknowledgement vs completed processing
+duplicate delivery
+idempotency
+event as evidence
+```
+
+These extra items are not part of the readiness decision.

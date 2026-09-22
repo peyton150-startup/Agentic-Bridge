@@ -120,6 +120,16 @@ evaluation
 
 You do not need framework API syntax.
 
+## Part E — Optional: Other Directions (only if Extension X was taken)
+
+Not part of the readiness decision.
+
+1. Draw the three-direction model: outbound REST, inbound REST, webhook.
+2. For an inbound `POST`, name which layer rejects a malformed body and which
+   rejects a well-formed but disallowed one.
+3. A webhook arrives twice. What does the receiver return each time, and how
+   many side effects occur?
+
 ## Decision
 
 ### Ready

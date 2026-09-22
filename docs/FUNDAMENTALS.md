@@ -212,6 +212,315 @@ The external service is the only participant here you do not own. That is precis
 
 ---
 
+## Optional Extension X — Serving an API and Receiving Events
+
+**Not part of the 3-day core.** Sections C3 and C4 are needed only for the
+optional Extension X in `SPRINT_PLAN.md`. They require Gate 1B, because they
+reuse C2's vocabulary with the direction reversed. The CMU readiness decision
+does not depend on them.
+
+### The main recall model: three directions
+
+```text
+Outbound REST   our application initiates a request   → an external service responds
+Inbound REST    an external client initiates a request → our application responds
+Webhook         an external producer initiates a request because an event occurred
+                → our application validates, acknowledges, and reacts
+```
+
+At the HTTP level all three look alike: a method, a path, maybe a body, a status,
+a response. What changes is **who starts the conversation, why, and which side
+owns the decision at each step**. A webhook receiver is not a new technology.
+It is an ordinary endpoint, usually `POST`, that another system calls when
+something happens.
+
+---
+
+## C3. Inbound API / Server Fundamentals — CMU 15-113 (server-side development, HW4) + UC Berkeley INFO 153B (REST, routes, status codes, validation)
+
+In C2 your tool was the **client** and someone else's service was the
+**server**. Here the positions swap: your program is the server, and someone
+else, such as a browser, a script, `curl`, or another service, is the client.
+
+```text
+consuming an API = your code sends requests and interprets responses   (C2)
+providing an API = your code receives requests and decides responses   (C3)
+```
+
+CMU 15-113's HW4 describes the backend's job in these terms: it receives requests
+at endpoints, validates user input, does server-side processing, keeps secrets
+out of the client, returns JSON, and returns helpful errors rather than crashing.
+
+### The inbound path
+
+```text
+client
+→ HTTP request (method + path + query + headers + body)
+→ server listening on a host/port
+→ routing: which handler owns this method + path?
+→ request parsing: path/query values extracted, JSON body deserialized
+→ schema validation: is the input the right shape and type?
+→ application/domain function: do the business rules allow this?
+→ result or domain error
+→ mapping to an HTTP status
+→ JSON response (serialized)
+→ client
+```
+
+You should be able to draw this from memory and say who owns each arrow.
+
+### Vocabulary, mechanism first
+
+```text
+endpoint / route    a method + path the server has agreed to answer
+                    (FastAPI calls a method + path pair a "path operation")
+GET                 read a representation; should not change server state
+POST                submit data for processing, often creating something
+path parameter      part of the resource's identity:   /terms/agent
+query parameter     modifies or filters the request:  /terms?limit=5
+request body        structured data sent with the request, usually JSON
+headers             metadata about the request (content type, credentials);
+                    recognition level only in this unit
+serialization       turning program values into JSON text for the response
+deserialization     turning JSON text from the request into program values
+```
+
+The endpoint anatomy from C2 does not change. C2 taught you to **build** these
+addresses. Here you **interpret** them.
+
+### Two validations, owned by different layers
+
+```text
+schema validation   "Is this a well-formed request?"
+                    required fields present, types correct, JSON parseable.
+                    Owned by the request model / framework boundary.
+
+domain validation   "Is this allowed and sensible for our application?"
+                    term not already defined, value within a business rule.
+                    Owned by ordinary application code.
+```
+
+A request can pass schema validation and still be refused by the domain. A
+well-shaped request is not an authorized or correct one. This is the same lesson
+as C2's "valid JSON is not a promise of the right JSON", seen from the other side.
+
+### Status codes you must be able to choose
+
+```text
+200 OK            the request succeeded and here is the result
+201 Created       the request succeeded and created something new
+400 Bad Request   the request was well-formed, but the application rejects it
+404 Not Found     the resource named in the path does not exist
+409 Conflict      the request conflicts with current state (e.g., already exists)
+422               request data failed schema validation (FastAPI's default for
+                  invalid input, a framework behavior, not a universal rule)
+```
+
+The **status** is the server's verdict. The **JSON body** is the detail. A client
+should be able to tell success from failure from the status alone, before it
+reads the body.
+
+### HTTP success is not domain correctness
+
+`201 Created` means your server said it created something. It does not prove the
+right thing was created, or that the business rule was the right rule. Transport
+success, protocol success, and domain correctness are three separate claims.
+
+### The transport layer should not become the domain layer
+
+Keep the route handler thin:
+
+```text
+route handler (HTTP adapter)       ordinary Python (domain)
+  receive parsed, validated input  → apply business rules
+  call the domain function         → change authoritative state
+  map result/error to a status     ← return result or raise a domain error
+```
+
+If the business rules live inside the route handler, you cannot test them
+without HTTP, reuse them from another entry point (such as a webhook, a CLI, or
+an agent tool), or tell a framework failure from a business failure. Agent
+systems depend on exactly this separation. The same domain function may be
+reached by a human's HTTP request, a webhook, or a model-proposed tool call, and
+it must enforce the same rules for all three.
+
+### Ownership boundary
+
+```text
+the client            chooses what to request
+HTTP                  transports it
+the server framework  routes and parses it
+schema validation     rejects malformed input
+application code      owns the business rules
+domain/state layer    owns authoritative changes
+the server framework  maps the result back to HTTP
+```
+
+The question to answer on every trace: **"What did the framework actually do
+here, and what did my own Python code do?"**
+
+### Request/response lifetime, API contract, OpenAPI
+
+- A server **listens** on a host and port and handles each request separately.
+  In this unit, each request is synchronous: the client waits until the server
+  sends the response.
+- An **API contract** is the published promise: which methods and paths exist,
+  what each accepts, what each returns, and which statuses mean what.
+- **OpenAPI** is a machine-readable format for writing that contract down.
+  FastAPI generates one from your code and serves interactive documentation from
+  it. Recognition level only: the generated document describes the contract but
+  does not enforce your business rules.
+- **CORS** (recognition only): a browser rule that decides whether a page served
+  from one origin may call a backend on another. CMU HW4 mentions it for split
+  frontend/backend deployments. This extension has no browser frontend, so it
+  does not arise.
+
+### Inbound failure kinds
+
+| Failure kind | Where it happens | Who owns the fix | Typical evidence |
+|---|---|---|---|
+| never reached the server | client/network | client or operator | connection refused, timeout on the client side |
+| routing | server framework | API contract | 404/405 for an unknown path or wrong method |
+| request/schema validation | framework boundary | request model | 422 with field-level errors |
+| application/domain validation | your application code | business rules | 400/409 with a domain reason |
+| domain operation | your state layer | domain code | state not changed as expected, or a 500 |
+| response mapping | route handler | adapter code | the right action but the wrong status/body |
+
+"The API failed" is not a diagnosis here either.
+
+---
+
+## C4. Webhook / Event-Driven HTTP Fundamentals — CMU 15-440 Distributed Systems (communication, RPC semantics, failure) + CMU 15-113 + UC Berkeley INFO 153B (asynchronous task queues)
+
+Only after C3 makes sense.
+
+### Direction
+
+```text
+Polling (client decides when)          Webhook (producer decides when)
+  your code: "anything new?"             producer detects an event
+  service:   "no"                        producer POSTs to your receiver URL
+  your code: "anything new?"             receiver validates the event
+  service:   "yes, here"                 receiver acknowledges
+                                         your application reacts
+```
+
+With polling, your code controls timing and often asks when nothing has changed.
+With a webhook, you **subscribe** once by registering a receiver URL, and the
+producer **calls back** when an event occurs. That is callback communication
+across a network. It is an established distributed-systems idea, not a web
+invention: historical CMU 15-440 material (Spring 2014, "Distributed Filesystems
+2 — AFS, Coda, callbacks") shows a file server calling back its clients when
+cached data changes. That lecture is historical support. It is not the current
+Fall 2026 syllabus.
+
+```text
+event producer     the external system where the event happened
+event receiver     your endpoint (the consumer/subscriber)
+subscription       the registration: "send events of type X to this URL"
+webhook endpoint   the receiver's ordinary HTTP route, usually POST /webhooks/...
+event envelope     the fields every event carries:
+                   event_id   (identity, used for deduplication)
+                   event_type (what happened, used for routing to a handler)
+                   payload    (the details)
+acknowledgement    the receiver's 2xx response: "I received this"
+```
+
+### Acknowledgement is not completion
+
+A `2xx` from the receiver means **"received and accepted."** It does not mean
+the downstream work finished or succeeded. Receivers often acknowledge quickly
+and do slower work afterwards, because the producer is waiting and may treat a
+slow answer as a failure. Berkeley INFO 153B covers the mechanism behind "do it
+later": asynchronous task queues. In this extension, recognizing that
+acknowledgement and processing can be separate is enough. No queue is built.
+
+### Delivery is not once, and not in order
+
+CMU 15-440 covers Remote Procedure Calls in its current Fall 2026 schedule. The
+public historical lecture slides (Spring 2014, Lecture 6 — RPC) make the
+underlying point directly. A sender that gets
+no answer cannot tell whether the request was lost, was processed and the reply
+was lost, or is still in flight. It must choose between two options:
+
+```text
+retry        → the receiver may see the same request more than once
+don't retry  → the request may never be processed
+```
+
+Exactly-once delivery is not achievable in general. Webhook producers usually
+retry, so a receiver must assume:
+
+```text
+the same event may arrive more than once       (duplicate delivery)
+an event may arrive late, or after a later one  (no ordering guarantee)
+an event may never arrive                       (so it is not the only source of truth)
+```
+
+### Idempotent handling
+
+An operation is **idempotent** if doing it twice has the same effect as doing it
+once. "Set status to paid" is idempotent. "Append a row" or "add 10 points" is
+not. The receiver makes a non-idempotent side effect safe by remembering which
+`event_id`s it has already applied:
+
+```text
+event arrives
+→ event_id already applied?  yes → acknowledge again, do nothing else
+                             no  → apply the side effect once, record the event_id
+```
+
+The historical CMU 15-440 RPC slides describe the same idea for at-most-once
+RPC: the server must be able to identify requests and keep a record of those it
+has handled. A **replay** is a duplicate
+sent on purpose, possibly by an attacker. The same identity check detects it,
+though production systems also check authenticity and timestamps. An in-memory
+set of seen IDs is enough to teach the idea. It is **not** durable production
+deduplication, because it is lost on restart and not shared between server
+processes.
+
+### An event is evidence, not authority
+
+A webhook payload is a claim made by another program. The rule from C2 and
+`ARCHITECTURE_CONTRACT.md` §3b still applies: it is an observation that your
+application interprets, not a command that edits your authoritative state by
+arriving. Validate it before any state changes, then let your own domain rules
+decide what it is allowed to cause.
+
+### Authenticity, at the concept level
+
+Anyone who learns the receiver URL can POST to it. Production receivers normally
+verify that the sender is really the producer. A common approach is a signature
+computed with a secret shared at subscription time and checked by the receiver
+before it trusts the body. CMU 15-440 lists the security challenges of
+distributed programs as a course objective, and CMU 15-113 requires that secrets
+stay on the backend, out of code and out of the repository.
+
+Two rules for this bridge:
+
+1. Know **what** authentication protects: it answers "did this really come from
+   the producer, unmodified?", which schema validation cannot answer.
+2. Use the specific provider's official verification procedure when there is a
+   real provider. Do not invent homemade cryptography. The local exercise has no
+   real provider, so it does not implement signing.
+
+### Webhook failure path
+
+```text
+sender          producer never sent it, or sent it to the wrong URL
+network         request lost or timed out; producer may retry → duplicates
+receiver        not running or not reachable
+authenticity    (concept) sender cannot be verified → reject before trusting the body
+schema          envelope malformed → reject; nothing changes
+duplicate/replay event_id already applied → acknowledge, no second side effect
+business        valid event, but the domain refuses or fails to apply it
+acknowledgement receiver's reply lost or too slow → producer retries → duplicate
+```
+
+Each line produces different evidence and needs a different fix.
+
+---
+
 ## D. State and Memory Fundamentals — CMU Module 2 + CS188 state representation
 
 Do not use “memory” for every piece of retained information.

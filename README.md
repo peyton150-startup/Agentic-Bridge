@@ -23,7 +23,8 @@ Day 3 — reasoning + multi-agent + evaluation/safety + final readiness gate
 ```
 
 Target: roughly **5–6 focused hours per day**, except Day 1, which runs to
-about **6–6.5 hours** because it carries the sprint's only implementation work.
+about **6–6.5 hours** because it carries the sprint's only required
+implementation work.
 
 ### 4-day preferred
 
@@ -36,6 +37,18 @@ Target: roughly **4–5 focused hours per day**.
 
 All essential readiness material is inside Days 1–3. Day 4 is repetition and transfer, not a new prerequisite.
 
+### Optional Extension X (about 2.5–3 hours)
+
+```text
+X1 — serve a tiny API with FastAPI (inbound request → validation → domain function → status + JSON)
+X2 — receive a simulated webhook (event → validation → deduplication → acknowledgement)
+```
+
+Available only after Gate 1B. Take it on Day 4 or after the bridge. It
+completes the three-direction model: **call an API, provide an API, receive an
+event**. It is not required for CMU readiness. See `docs/SPRINT_PLAN.md` →
+Optional Extension X.
+
 ## What This Sprint Does NOT Require
 
 Before CMU you do **not** need to:
@@ -43,7 +56,7 @@ Before CMU you do **not** need to:
 - build a polished product;
 - learn every LangGraph or CrewAI API;
 - deploy a production vector database;
-- build an API, an API server, or a reusable HTTP client;
+- build an API, an API server, or a reusable HTTP client (a tiny FastAPI server and webhook receiver are available as the optional Extension X, once the outbound HTTP boundary is understood; they are never required);
 - master Tree-of-Thought algorithms;
 - build a sophisticated multi-agent system;
 - reproduce CMU labs;
@@ -90,6 +103,11 @@ Before starting CMU, you should be able to explain from memory:
 - what evaluation, safety, execution monitoring, and traces are trying to prove;
 - how to map CMU's LangGraph/CrewAI vocabulary back to ordinary state and control flow.
 
+Optional, only if Extension X is taken: the difference between calling an API,
+serving one, and receiving a webhook. That includes who initiates each, which
+layer validates what, why a `2xx` acknowledgement is not completed work, and why
+duplicate events must not cause duplicate side effects.
+
 ## Repository Map
 
 ```text
@@ -117,6 +135,10 @@ docs/
 
 learning/
   LEARNING_LEDGER.md
+
+code/
+  tiny_agent.py      (Patches 1–4)
+  api_tool.py        (Patch 5)
 ```
 
 ## Start Here

@@ -78,6 +78,30 @@ Without notes:
 
 ---
 
+## Gate X — Optional Extension: Serving an API and Receiving Events
+
+Only if Extension X was taken. Requires Gate 1B. **Not required for promotion.**
+Without notes:
+
+1. State the three-direction model: outbound REST, inbound REST, webhook. Say
+   who initiates each and why.
+2. Draw the inbound path from client to JSON response. Mark what FastAPI did
+   and what your own Python did.
+3. Place an unseen failure in the right inbound layer: routing, schema, domain,
+   operation, or response mapping.
+4. Explain why a `201` does not prove the domain operation was correct.
+5. Draw the webhook path. Explain why a `2xx` acknowledgement is not completed
+   processing.
+6. Explain why duplicates and reordering happen without anything being broken,
+   and how an `event_id` check keeps a non-idempotent side effect to one.
+7. Explain why an event is evidence rather than authority, and what signature
+   verification protects (concept only).
+
+**Pass:** 6 of 7, including item 6. Failing Gate X is not a CMU watch item for
+readiness purposes. Note it and move on.
+
+---
+
 ## Final Promotion Rule
 
 The learner does not need perfect vocabulary.

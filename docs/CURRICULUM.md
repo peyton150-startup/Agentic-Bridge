@@ -69,4 +69,16 @@ source or an API-memorization requirement. Learn each ordinary mechanism
 first, read the matching official Pydantic AI documentation, and then trace
 the pinned Trellis implementation in `TRELLIS_CODE_MAP.md`.
 
+## Optional Extension X (after Gate 1B, about 2.5–3 hours)
+
+```text
+three directions: outbound REST, inbound REST, webhook
+serving an API: routing, schema vs domain validation, status + JSON, thin adapter
+receiving a webhook: acknowledgement vs processing, duplicates, idempotency,
+                     no ordering guarantee, event as evidence, authenticity (concept)
+```
+
+Not required for readiness. Concepts come from CMU/Berkeley and syntax from the
+official FastAPI docs.
+
 See `SPRINT_PLAN.md` for the full sequence and `FUNDAMENTALS.md` for the concept checklist.

@@ -9,10 +9,13 @@ The plan is intentionally capped. If you exceed a day's timebox, cut optional im
 ```text
 3-day core: about 15–17 focused hours total
 4-day preferred: same core + about 3–4 hours consolidation
+optional Extension X: about 2.5–3 focused hours (serving an API + receiving a webhook)
 ```
 
-Day 1 is the heaviest day because it carries the only implementation work in
-the sprint, including the one external-API segment.
+Day 1 is the heaviest day because it carries the only **required**
+implementation work in the sprint, including the one external-API segment. The
+optional Extension X at the end of this file has its own small implementation.
+It never displaces a core item.
 
 Do not spend more than about one hour per day on academic reading. The readings are there to establish the mental model; the quizzes and transfer exercises prove whether you can use it.
 
@@ -44,7 +47,7 @@ Complete the same three core days, then use Day 4 for retrieval, transfer, and a
 15–30 min  buffer
 ```
 
-Day 1 is the longest day in the sprint. It is the only day that carries
+Day 1 is the longest day in the sprint. It is the only core day that carries
 implementation, and the API segment is deliberately placed here rather than
 given a day of its own.
 
@@ -205,7 +208,9 @@ bounded result returned to the agent
 
 Do **not** add an API server, FastAPI, a write method, OAuth, API keys,
 retries, pagination, webhooks, a generic client abstraction, a database, or a
-frontend.
+frontend. A FastAPI server and a webhook receiver exist only as the optional
+Extension X, taken later and separately. They never go into Patch 5, and never
+into Day 1.
 
 ### Failure demos — CORE
 
@@ -722,3 +727,105 @@ Use `TRELLIS_CODE_MAP.md` under **Day 4 — Framework mapping and capstone-level
 Translate Trellis back from Pydantic AI and AG-UI vocabulary into ordinary mechanisms: state, action, decision, loop, termination, authority, and evidence. Then narrate the complete `create_task` path and, for every boundary, state its input, output, mutable state, authority, and failure behavior.
 
 For the mock transfer, design—but do not automatically implement—a read-only “list overdue tasks” behavior. Predict where its typed contract, model-visible tool, deterministic query, replay evidence, and tests would belong before opening the linked code.
+
+---
+
+# Optional Extension X — Serving an API and Receiving Events
+
+**Timebox:** about 2.5–3 hours. **Not part of the 3-day core or the readiness
+decision.**
+
+**When:** only after Gate 1B has passed. Best after Day 3, as part of Day 4, or
+as a separate session after the bridge. If Day 4 is short, the Day 4 items come
+first. Never take time from a core day for this.
+
+**Why it exists:** Day 1 taught one direction, where your code calls a service.
+Agent systems also receive calls, from users, other services, and events. This
+extension adds the other two directions without turning the bridge into a
+web-development course:
+
+```text
+Outbound REST   our application initiates a request   → an external service responds    (Day 1, Patch 5)
+Inbound REST    an external client initiates a request → our application responds        (X1)
+Webhook         an external producer initiates a request because an event occurred
+                → our application validates, acknowledges, and reacts                    (X2)
+```
+
+The goal is to understand **what** happens, **who** owns each decision, **why**
+each boundary exists, and **where** failures occur. Memorizing the framework is
+not the goal.
+
+**Source boundary:** concepts come from CMU 15-113, CMU 15-440, and UC Berkeley
+INFO 153B (`SOURCES.md` sources 8–10). FastAPI's official documentation is used
+only for syntax. The Berkeley Spring 2026 course uses Flask, and its concepts
+transfer unchanged.
+
+```text
+X1 — serving an API (about 90 min)
+15 min  reading: CMU 15-113 Week 5 + HW4; Berkeley INFO 153B Spring 2026 REST/validation topics
+20 min  FUNDAMENTALS.md C3 + draw the inbound path from memory
+10 min  Extension X1 quiz / remediation
+35 min  Patch X1 (FastAPI service + TestClient tests)
+10 min  closed-code: what FastAPI did vs what your Python did + one altered variant
+
+X2 — receiving a webhook (about 70 min)
+15 min  FUNDAMENTALS.md C4 + draw polling vs webhook + webhook failure path
+          (reading: CMU 15-440 Fall 2026 syllabus; historical RPC slides for delivery semantics)
+10 min  Extension X2 quiz / remediation
+30 min  Patch X2 (local simulated receiver + tests)
+15 min  closed-code: trace valid / malformed / duplicate + one altered variant
+
+buffer  15 min
+```
+
+## X1 — Inbound REST API
+
+Before any code, all five teaching-contract steps apply:
+
+1. **Plain English:** explain what a server does with a request, without saying
+   "FastAPI".
+2. **Contract:** for `POST /terms`, state input, output, state read/written,
+   authority owner (who decides whether a term may be added), and each failure
+   kind from the C3 table.
+3. **Prediction:** for one valid request, one malformed request, and one
+   domain-invalid request, predict the method, path, input sources, validation,
+   owning function, status, and body.
+4. **Quiz:** Extension X1 in `QUIZ_PROTOCOL.md`.
+5. **Patch boundary:** Patch X1 in `IMPLEMENTATION_PLAN.md`, and nothing more.
+
+The key question after the patch: *"What did FastAPI actually do here, and what
+did my own Python code do?"*
+
+## X2 — Webhook receiver
+
+Only once X1 traces correctly from memory. Same five steps, using the Extension
+X2 quiz and Patch X2.
+
+The key things to prove after the patch:
+
+- a duplicate delivery produced exactly **one** side effect;
+- a malformed event changed **nothing**;
+- a `2xx` meant "received", and you can say what it did **not** mean.
+
+Do not build signing, a queue, retries, persistence, or a real provider
+integration. Do not add WebSockets, SSE, GraphQL, gRPC, or Kafka. Those are
+possible later extensions, not part of this one.
+
+## If Extension X runs long
+
+Cut in this order:
+
+```text
+1. the altered variants (do them on paper instead)
+2. writing Patch X2 yourself: inspect and trace a supplied one instead
+3. Patch X2 entirely: keep C4 and the X2 quiz, since the concepts matter more than the receiver
+```
+
+Never cut the X1 prediction step or the duplicate-delivery reasoning in C4.
+
+## Related to Trellis
+
+`TRELLIS_CODE_MAP.md` already lists a FastAPI request as part of Trellis's
+environment. After X1, use Trellis's request handler only as a transfer example:
+point to where accepted input is separated from domain authority. Do not open it
+before the X1 quiz passes.

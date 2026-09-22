@@ -76,3 +76,8 @@ request is enough to make the boundary real.
 
 Do not turn the sprint into a systems course, and do not turn the API exercise
 into an API course. One endpoint, one request, one set of failure kinds.
+
+The optional Extension X (serving an API, receiving a webhook) is kept outside
+the core for exactly this reason. It is grounded in CMU 15-113 and 15-440 and
+Berkeley INFO 153B (see `SOURCES.md`), not in the Agentic AI Program's own
+module list, and the readiness decision does not depend on it.

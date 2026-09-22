@@ -517,7 +517,17 @@ Chosen so the answer must separate: external API vs owned database (authority), 
 
 **Result: Part C — PASS.** Full frame transferred to an unseen problem, including a caching design with its new failure modes, and one correction of the tutor's own framing (environment vs ownership).
 
-**Resume here:** Part D (CMU vocabulary, mechanism-level one-or-two-sentence descriptions of 15 terms), then the readiness decision.
+### 2026-09-22 / Part D — started, first five
+
+Standard given: mechanism, not restatement ("memory is so the agent remembers" ✗ vs "a store the agent writes to and reads back on a later turn" ✓).
+
+- **memory** — correct, unprompted.
+- **tool use** — half ("an agent can call upon tools that read/write"); mechanism restated: model **proposes**, code **validates**, code **executes**, result returns as **observation**; the model never touches the tool.
+- **agentic AI / reasoning loop / external API call — "not sure" / "don't know"**, although all three were drawn or answered cold earlier the same day.
+
+**Diagnosis (important for the decision):** this is a **naming gap, not a understanding gap** — the learner does not recognise that "define the term" and "explain the mechanism you just drew" are the same task. Cues given (Q1 answer for agentic AI; "name the boxes in order" for reasoning loop; the postcode path for the API call); session ended before the retry.
+
+**Resume here:** Part D retry with those three cues, then the remaining ten terms (RAG, embedding, vector database, ReAct, Tree-of-Thought, LangGraph, CrewAI, guardrail, logging/observability, evaluation), then the readiness decision. Expect the mechanisms to be present and the *labels* to be the work: ask "describe the mechanism, then name it" rather than "define X".
 
 ---
 

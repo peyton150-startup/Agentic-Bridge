@@ -478,6 +478,22 @@ Reference drawing given at end of session. **Watch item:** reconstructing loop *
 
 **Resume here:** Part B Q20 (the five failure kinds with one example each — required for the readiness decision), then Part C (unseen transfer) and Part D (vocabulary).
 
+### 2026-09-22 / Part B Q20 — five failure kinds (required item)
+
+Four external examples correct cold (10-char input vs 5 digits; internet drops mid-request; 400s/500s; missing fields or no body). "Did a request leave?" — **4/4 correct** (no / yes / yes / yes), the boundary question an instructor would use.
+
+Fifth kind (loop/control-flow) needed two cues, then answered: no timeout → wait forever; no `max_steps` → infinite loop. Difference in kind: the tool works; the defect is in our own control code, nothing outside failed.
+
+**Q20: PASS. Part B complete.** Next: Part C (unseen transfer), then Part D.
+
+### 2026-09-22 / Part C — problem issued, not yet answered
+
+Unseen transfer problem given: **campus bike-share rider assistant.** Available pieces: a live station-availability API owned by the hardware vendor (not ours), a ~60-page rental policy handbook in PDF, the company's own rentals database (who has which bike), and a maintenance ticket system that accepts new tickets. Sample rider requests: bikes available at a station now; how late before a late charge; reporting a broken brake.
+
+Chosen so the answer must separate: external API vs owned database (authority), RAG over the handbook vs live lookup, a **write** action (ticket creation) needing approval, and memory.
+
+**Resume here:** learner defines the 13 Part C items for this problem (performance goal, environment, state, actions/tools, authoritative data, memory, external tool + contract, RAG, reasoning/control strategy, single vs multi-agent, termination, evaluation scenario, safety boundary). May answer in batches. Then Part D (vocabulary), then the readiness decision.
+
 ---
 
 ## CMU Watch Items

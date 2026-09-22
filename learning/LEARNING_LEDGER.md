@@ -452,7 +452,17 @@ Reference drawing given at end of session. **Watch item:** reconstructing loop *
 
 **Note — regression:** on 2026-09-20 (Day 1B) the learner recalled the internals in order and explained why a returned failure beats a crash. Two days later both slipped. Delayed retrieval, not first learning, is the gap.
 
-**Resume here:** learner redraws the HTTP path cold (file closed): steps incl. status check before parse, where each of the four failure kinds is caught, model/code/external labels, the one participant not owned (the external service) and what that implies, confidence. Then Parts B–D.
+**Scaffolded recovery:** learner said a blank-page redraw was not possible → given the eight steps shuffled plus the failure-kind list to order and label. Ordering correct first try (`d b e a h f c g`), owners correct, four of five failure kinds correct. Refinement: `http` originates at the external service but is *caught* at the status check — failures happen in one place and are noticed at a checkpoint.
+
+**Not-owned participant:** identified the external service and said the response "is unchecked and could have bugs in it, but isn't that what we do" → yes: the status/parse/shape checks exist *because* the service is not ours. Taught the two consequences (data may be wrong → a/h/f; timing is not ours → timeout) and that a response passing every check is still **evidence, not authority** (shape checked, not truth) — links to Day 2 retrieved-copy-as-evidence.
+
+**Cold redraw (no list): correct.** Full path model proposes → 5-digit check → GET + timeout → external response → status 200 → parse → fields → country → bounded result → observation/trace, with failure kinds and owners. Split the field checks into two, matching the code. Minor: trace write is the loop's job and the **model** reads the observation next.
+
+**Result: Part A — PASS** (both halves, from memory, after scaffolding).
+
+**Habit to build:** learner did not give a confidence rating on any attempt despite four requests. Worth naming at CMU: "I'm sure" vs "I think" is how an instructor knows where to help.
+
+**Resume here:** Part B, asking only the questions the ledger does not already cover — Q1, Q2, Q16, Q18, Q19, Q20 (Q20 is required for the readiness decision). Then Part C (unseen transfer) and Part D (vocabulary).
 
 ---
 

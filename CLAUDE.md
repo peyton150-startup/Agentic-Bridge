@@ -75,6 +75,13 @@ Label each box with **who owns it** (model / code / external) and mark where it 
 
 When quizzing recall, do not show the diagram first: have the learner draw it cold, then show the reference.
 
+## Stuck Rule
+
+When the learner is stuck, says they cannot answer from memory, or asks for the
+answer, use the **cue ladder** in `docs/QUIZ_PROTOCOL.md`: one small cue at a
+time, scrambled pieces before any reference, and the answer only as a last
+resort. Then re-ask cold; a gate passes on the cold attempt, not the cued one.
+
 ## Quiz Rule
 
 Use retrieval and transfer questions, not recognition-only questions.

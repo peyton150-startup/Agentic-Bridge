@@ -6,6 +6,35 @@ A quiz is passed when the learner can answer **at least 4 of 5** questions corre
 
 Do not reuse the exact same question after explaining the answer.
 
+## The Cue-Ladder Exercise
+
+Use this whenever the learner is stuck, says "I can't do it from memory", or
+asks for the answer. Do **not** show the answer or the reference diagram first.
+Climb one rung at a time, and stop climbing as soon as recall starts.
+
+```text
+rung 0   ask the question, no help at all        ← always start here
+rung 1   one tiny cue          e.g. "database → ?"
+rung 2   a second cue          e.g. the first step, or the box count
+rung 3   scrambled pieces to order and label     ← still retrieval, not reading
+rung 4   show the answer                         ← last resort only
+```
+
+Rules:
+
+- Give **one** rung at a time and re-ask. Never jump from rung 0 to rung 4.
+- A cue is a pointer, not a piece of the answer.
+- Rung 3 (shuffled steps the learner must order, label, and attach failures to)
+  is still retrieval. Prefer it over showing anything.
+- After reaching an answer with cues, put everything away and ask again **cold**.
+  A gate passes on the cold attempt, not the cued one.
+
+Why it works: the effort of reaching for an answer is what strengthens recall.
+Handing over notes immediately rescues the learner out of the very work that
+builds the memory. This matters most when the concept was already understood
+once and a working-memory lapse makes it feel forgotten — the knowledge is
+there, and the cue only needs to open the door.
+
 ## Day 1A Quiz — Agent / Tool Loop
 
 Ask five selected from:

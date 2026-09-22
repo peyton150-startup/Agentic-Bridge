@@ -464,6 +464,20 @@ Reference drawing given at end of session. **Watch item:** reconstructing loop *
 
 **Resume here:** Part B, asking only the questions the ledger does not already cover — Q1, Q2, Q16, Q18, Q19, Q20 (Q20 is required for the readiness decision). Then Part C (unseen transfer) and Part D (vocabulary).
 
+### 2026-09-22 / Part B — Q1, Q2, Q16, Q18, Q19
+
+**Q1 (agent vs one LLM call):** started with "the model proposes, code is the authority" and asked what "mechanisms" meant → cue ladder rung 1 (loop / state / tool / termination / trace, fill the blank). Learner then objected: "but the box has only code in it, the model is not involved in these steps" — **the key insight**, affirmed: an agent is the code wrapped around the call; the model is one box. Blanks: tool and trace correct; state thin ("where we are currently" → also carries request, step count, trace so turn 2 knows what turn 1 tried); **termination conflated with the goal** → split out (`final_answer` = goal met; `max_steps` = budget, goal NOT met; `model_error`), linked to Day 3 scenario 4.
+
+**Q2 (environment/state/action/goal on `lookup_postcode`):** state, action, goal correct; said environment "would be the code" and asked for structure → cue "you labelled exactly one box external" → **zippopotam service (plus the network)** — correct. Given a reusable frame (goal / environment / action / observation / state). Refinement: observation is what comes back (result dict or error dict).
+
+**Q16:** boundary = client/server — correct; sharpened to *code you own vs code you don't*, crossed by a contract. Why behind a tool: "so the model cannot just call the tool whenever it wants without approval and validation" — correct; added that a direct reach would skip all four checks and return the whole raw body instead of four bounded fields.
+
+**Q19:** correct, including the sharp part unprompted — the wait "is not a step", so `max_steps` cannot fire during it; the timeout must live on the request.
+
+**Q18: 1 of 2.** Missing field — correct. Second answer (infinite loop) belonged to Q19. Missed the `200` carrying an error payload / correct-shape-wrong-content, which the learner **did** get on Day 1B (rate-limit example) — second instance of a Day 1B item not surviving delayed retrieval. Re-taught: checks confirm shape, never truth.
+
+**Resume here:** Part B Q20 (the five failure kinds with one example each — required for the readiness decision), then Part C (unseen transfer) and Part D (vocabulary).
+
 ---
 
 ## CMU Watch Items

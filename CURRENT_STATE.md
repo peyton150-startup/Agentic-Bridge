@@ -2,9 +2,15 @@
 
 ## Lifecycle
 
-**Current stage:** Day 3 — reasoning, multi-agent, evaluation, safety
+**Current stage:** Final readiness check (`docs/FINAL_READINESS_CHECK.md`)
 
-Day 0 diagnostic passed 2026-09-18; Day 1 and Gate 1 passed 2026-09-20; Day 2 and Gate 2 passed 2026-09-21 (see `learning/LEARNING_LEDGER.md`).
+Day 0 diagnostic passed 2026-09-18; Day 1 (incl. Day 1B external API) and Gate 1 passed 2026-09-20; Day 2 and Gate 2 passed 2026-09-21; Day 3 work and quiz passed 2026-09-21 (see `learning/LEARNING_LEDGER.md`).
+
+Readiness check progress (2026-09-22):
+
+- Part A, loop redraw — **passed** with a watch item (router / guard / error-handling vocabulary).
+- Part A, HTTP-path expansion — **in progress**. Regressed since Day 1B: said tool failures "stop the module"; re-taught that every failure is a returned result → observation → loop continues.
+- Parts B, C, D — not started.
 
 ## Time Constraint
 
@@ -15,12 +21,14 @@ Do not expand the scope unless a diagnostic reveals a prerequisite gap that woul
 ## What Exists
 
 - documentation;
-- `learning/LEARNING_LEDGER.md`, with the Day 0 diagnostic and Day 1 record;
+- `learning/LEARNING_LEDGER.md`, the full learning record from Day 0 onward;
 - `code/tiny_agent.py` — Patches 1–4: state, one read-only deterministic tool with
   input validation, deterministic model stub, bounded loop, and trace
-  (`final_answer` / `max_steps` / `model_error`).
-
-Patch 5, the external read-only HTTP tool, is not built yet.
+  (`final_answer` / `max_steps` / `model_error`);
+- `code/api_tool.py` — Patch 5: `lookup_postcode`, one read-only GET to
+  api.zippopotam.us with input validation, timeout, status check, JSON parse,
+  shape checks, and a bounded result (`invalid_input` / `network` / `http` /
+  `shape` error results). Runs standalone; not wired into `run_agent` (optional).
 
 ## What Does Not Exist Yet
 

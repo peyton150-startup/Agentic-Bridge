@@ -450,6 +450,8 @@ Reference drawing given at end of session. **Watch item:** reconstructing loop *
 
 **Hint questions:** start (model proposes, code approves, code calls tool) — correct. Timeout / bad JSON / missing fields: said each "stops the module" → **misconception: tool failures stop the program.** Shown `api_tool.py`: every failure is a `return {"error": ...}` (invalid_input / network / http / shape) → observation → trace → loop continues; same lesson as the rejected proposal. 404/500 skipped — went straight to JSON decode; taught the status check comes before parsing. "Output to the cmd" → that is the standalone demo `print`s; inside the agent the result is an observation and only the final answer reaches the user.
 
+**Note — regression:** on 2026-09-20 (Day 1B) the learner recalled the internals in order and explained why a returned failure beats a crash. Two days later both slipped. Delayed retrieval, not first learning, is the gap.
+
 **Resume here:** learner redraws the HTTP path cold (file closed): steps incl. status check before parse, where each of the four failure kinds is caught, model/code/external labels, the one participant not owned (the external service) and what that implies, confidence. Then Parts B–D.
 
 ---

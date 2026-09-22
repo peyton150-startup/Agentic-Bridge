@@ -494,6 +494,21 @@ Chosen so the answer must separate: external API vs owned database (authority), 
 
 **Resume here:** learner defines the 13 Part C items for this problem (performance goal, environment, state, actions/tools, authoritative data, memory, external tool + contract, RAG, reasoning/control strategy, single vs multi-agent, termination, evaluation scenario, safety boundary). May answer in batches. Then Part D (vocabulary), then the readiness decision.
 
+#### Part C items 1–8 (2026-09-22)
+
+1. **Goal** — correct (three request types); added "from authoritative sources, no write without approval" to make it testable.
+2. **Environment** — first answer "the hardware vendor"; then "the database and the ticketing system". **Learner was right and the tutor's earlier postcode framing was loose** — corrected in session: *inside/outside the agent* decides what is environment; *do we own it* decides trust/authority. Two axes, not one. Learner omitted the **rider** (source of requests and approvals).
+3. **State** — "the rider and the report" + step and trace when cued. Added: an observation that a later step depends on (the bike id) becomes state.
+4. **Tools** — listed ticket write, handbook read, rentals write; **missed the vendor read tool** across three prompts until told it is the same shape as `lookup_postcode`. Watch item: the read-only external lookup is the tool they forget to name.
+5. **Authoritative data** — "the database is authoritative" correct, unprompted.
+6. **Memory: no** — strong reason, unprompted: the ticket system is already the record and emails the rider; a second copy could drift.
+7. **Contract** — proposed **polling every 2 min + cache** instead of a per-request GET; taught contract (one GET, URL shape) vs caching decision, then the trade: cached design removes network/http/shape from the request path and adds staleness + cold cache; "moving a boundary changes which failures you get — loud network errors traded for silent staleness". Learner chose cached. Max age: first 3 min (poll 2 min) → corrected to 5 min after the missed-poll arithmetic; learner saw why. Timeout 20 s → corrected to 2–3 s from the rider's latency budget. Success condition "a response arrives" → **200 only**. Bounded result correct (station, count) but included the trace → boundary: tool returns data, the loop records.
+   - **Failure kinds for the tool:** network, shape, http unprompted; `agent loop` after a cue; `invalid_input` only after the "libary" typo cue. Also taught: you can only validate locally what you hold (station-id set), else a typo returns as `http` 404.
+   - **Cached design follow-up:** poller owns the four HTTP failure kinds — correct. Recording target wrong (said the ticket system) → logs, with alerting only on a pattern (N in a row, or age past max); learner correctly noted a one-off resolves on the next poll. The max-age check is what makes a dead poller visible instead of confidently wrong.
+8. **RAG: "yes, and I don't know any alternative."** Taught three alternatives (whole handbook in context, **curated rules table**, full-text search) and the decision criterion: the late-fee answer is a **number about money** asked constantly → structured lookup for the hot facts (Day 2 locker pattern), RAG for the long tail. Speed was not the argument; **exactness** was. Answer: both.
+
+**Resume here:** Part C items 9–13 (reasoning/control strategy, single vs multi-agent + baseline, termination, evaluation scenario with pre-written pass criteria, safety boundary). Then Part D, then the readiness decision.
+
 ---
 
 ## CMU Watch Items

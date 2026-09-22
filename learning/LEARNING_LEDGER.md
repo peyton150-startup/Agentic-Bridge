@@ -422,7 +422,15 @@ First pass 3/5. Correct: Q1 planning step vs longer prompt ("a script to follow"
 - **Q4 missed:** said a correct answer with a forbidden delete "passed with a silent delete" → it fails. Fresh check (forbidden email sent, correct answer): **fail** — correct.
 - **Result: PASS** after fresh checks. Rule logged: a run passes only if the answer is right AND nothing forbidden happened.
 
-**Resume here:** FINAL_READINESS_CHECK — Part A (draw agent with request, state, model decision, tool, observation, loop, termination, trace; label authority and failure boundaries), then Parts B–D.
+### 2026-09-22 / Final readiness check — Part A (in progress, NOT yet passed)
+
+**First drawing (low confidence, learner said so):** request → loop → state created → model decision → trace → tool → result → termination. Issues: state drawn inside the loop (learner's own sentence had it right: state first, then loop, then model); trace drawn as a step instead of the notebook written at specific moments; termination only at the end; validation missing between model decision and tool.
+
+**Second attempt (after four hints):** correct that code approves the proposal, then code calls the tool, and **code is the authority**. Two mislabels: (1) invalid input called "an error" → it is a `rejected` observation and the loop continues (Day 3 scenario 2 lesson); (2) "if the model hallucinates it would be a model error" → `model_error` means the model call crashed; a hallucination either fails validation or becomes a wrong answer (generation failure). Learner said "I am missing something" — the loop shape: three termination checks (max_steps at top, model_error after the call, final_answer before validation) and the trace-write points.
+
+Reference drawing given at end of session. **Watch item:** reconstructing loop *order and shape* from memory (Day 1 exit test missed step+1 and loop-back too). Concepts are solid; sequencing under recall is the weak spot.
+
+**Resume here:** learner redraws Part A **cold** (no reference) with all eight pieces, the three stop points, trace-write points, authority label and failure-kind labels. Then Part B (15 core questions — many already covered; ask only the unseen ones), Part C (unseen transfer problem), Part D (CMU vocabulary). Passing Part A–D completes the 3-day core; Day 4 is optional (vocabulary map incl. Pydantic AI unit, mini-capstone, mock lab, delayed retrieval).
 
 ---
 

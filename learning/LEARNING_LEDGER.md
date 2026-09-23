@@ -573,4 +573,21 @@ Record only weaknesses that should receive extra attention during the program.
 
 | Concept | Why weak | What I can already explain | What to watch during CMU |
 |---|---|---|---|
-| | | | |
+| Tool failures are not stop reasons | Listed network/http/shape as loop stops three times (Part A HTTP, Part C item 11, termination) | The three stops and the "who failed?" test when prompted | Any time a tool fails in a lab: ask "who failed?" — outside world → observation, loop continues |
+| Tool result → model, not user | Twice said the observation reaches the user ("output to the cmd", Part D item 2) | The full HTTP path in order, cold | Where each tool's output goes next; only the final answer reaches the user |
+| Shape vs truth (external data as evidence) | Q18: missed the `200` with an error payload, which was answered correctly on Day 1B | Why the not-owned service forces status/parse/shape checks | A response that passes every check is still evidence; watch for "the API said so" reasoning |
+| RAG: embed the question | Missed the question-embedding step at Gate 2 and again in Part D; said vectors go into context | The offline pipeline, top-k, chunking trade-offs, retrieval vs generation failure | Draw both branches (documents and question) every time; the model reads chunk **text** |
+| Embedding vocabulary | Called embeddings "weights" twice (Day 2 quiz, Part D) | That similarity is topic, not truth or negation (fresh check passed) | Weights = model internals; embedding = output vector; dot product = the search step |
+| Naming mechanisms | Said "not sure" to terms whose mechanisms had been drawn cold the same day; router / guard / error-handling mixed up | The mechanisms themselves | When a term appears in lecture: draw the boxes, then read the definition off the drawing |
+
+**Habit, not concept:** gave a confidence rating only once in two days despite repeated asks. At CMU, saying "I'm sure" vs "I think" is how instructors know where to help.
+
+## Readiness Decision — 2026-09-23
+
+**Ready with watch items.** Parts A–D passed; Part B Q20 (required) passed. Learner's own call: "Ready". Tutor's call is one notch more cautious because of the between-session slips above, each of which was answered correctly at least once. No prerequisite is broken: the loop was drawn cold and complete a day later, the full frame transferred to an unseen problem (bike share), and the Pydantic AI cut ended with the learner's own conclusion — "not a magical framework, it makes writing the loop more structured and streamlined."
+
+**Pydantic AI 20-min cut:** translation table 4/6 first pass (`deps` confused with tool arguments → app-supplied, model cannot change; deferred tool = `awaiting_approval` after rung 2). Learner asked for a side-by-side and a diagram; mental model "a box that runs the loop" confirmed and extended with the two edges where authority lives. Transfer (`archive_task`): refusal reasons — not allowed, task doesn't exist — correct. Approval re-check after resume was **taught, not tested** (time).
+
+**Not done, deliberately:** Day 4 mini-capstone, mock lab, full Pydantic AI Trellis trace, Extension X, separate HTTP-path redraw (covered by Part D item 2 the same day).
+
+**Sprint complete.** Carry the watch-items table into the program.

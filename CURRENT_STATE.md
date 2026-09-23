@@ -2,15 +2,13 @@
 
 ## Lifecycle
 
-**Current stage:** Final readiness check (`docs/FINAL_READINESS_CHECK.md`)
+**Current stage:** Sprint complete — **Ready with watch items** (2026-09-23)
 
-Day 0 diagnostic passed 2026-09-18; Day 1 (incl. Day 1B external API) and Gate 1 passed 2026-09-20; Day 2 and Gate 2 passed 2026-09-21; Day 3 work and quiz passed 2026-09-21 (see `learning/LEARNING_LEDGER.md`).
+Day 0 diagnostic passed 2026-09-18; Day 1 (incl. Day 1B external API) and Gate 1 passed 2026-09-20; Day 2 and Gate 2 passed 2026-09-21; Day 3 work and quiz passed 2026-09-21; final readiness check Parts A–D passed 2026-09-22/23 (see `learning/LEARNING_LEDGER.md`).
 
-Readiness check progress (2026-09-22):
+The watch items to carry into the program are in the **CMU Watch Items** table at the end of the ledger.
 
-- Part A, loop redraw — **passed** with a watch item (router / guard / error-handling vocabulary).
-- Part A, HTTP-path expansion — **in progress**. Regressed since Day 1B: said tool failures "stop the module"; re-taught that every failure is a returned result → observation → loop continues.
-- Parts B, C, D — not started.
+Optional work not done: Day 4 mini-capstone, mock lab, full Pydantic AI Trellis trace (a 20-minute cut was done), and Extension X.
 
 ## Time Constraint
 

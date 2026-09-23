@@ -548,7 +548,22 @@ cold redraw of loop + HTTP path (Day 4 delayed retrieval) ~20 min
 
 One-sentence definition: said "a single call cannot call tools without the code, so the code defines the loop" — half right; the missing half was **feedback** (turn 2 reads turn 1's observation). Definition given: *code repeatedly asks the model for a next step, carries out allowed actions, and feeds each result back as an observation, until a stop condition fires.*
 
-**Resume here:** Part D item 2 (external tool/API call: steps from "code calls `lookup_postcode`" to "observation", plus the not-owned step and its implication), item 3 (agentic AI), then the remaining ten terms with the framework vocabulary map folded into LangGraph/CrewAI. Then the Pydantic AI 30-min cut, the decision + watch list, and the HTTP-path redraw.
+### 2026-09-23 / Part D — items 2–9
+
+2. **External tool/API call** — internal order correct cold (validate → GET + timeout → network → 200 → parse → fields → result). **Ending slip again:** "the observation is returned and the user has their answer" → observation goes to the loop/model; only the final answer reaches the user (same slip as yesterday's "output to the cmd"). Not-owned step: "we do not own the response so we have to verify everything" — correct; added timing (timeout) and shape ≠ truth (evidence).
+3. **Agentic AI** — "deterministic code topped with a model that communicates probabilistically" → close; fixed: the model sits *inside* the loop and **proposes actions**, not just talks (chatbot vs agent contrast).
+4. **RAG** — flow right; **missed embedding the question with the same model (second time — also missed at Gate 2)**, and said vectors are loaded into context → the chunk **text** is; vectors are only for finding.
+5. **Embedding** — **"weights" slip again** (Day 2 quiz Q5), plus "sees what content is about" and dot product folded in. Separated: weights = model internals; embedding = output vector; dot product = the search step. **Fresh check passed:** "has bikes" vs "has NO bikes" → close; "it tells you about the topic, not if the information is correct".
+6. **Vector database** — storage only; added the query-time nearest-neighbour search as its defining job.
+7. **ReAct** — said "then it is a planning agent" → corrected with a reflex / ReAct / planning table: one step at a time, reasoning written into the trace (evidence for diagnosis).
+8. **Tree-of-Thought** — learner connected it **unprompted to CS188 MDPs** (good: it is search); differences given (model generates and scores; heuristic, not a defined reward). Cost: answered 9 calls, missed the scoring calls → 18 (~6× the single path).
+9. **LangGraph** — asked for a picture → text diagram of the standard agent ⇄ tools graph. Learner restated definitions rather than mapping onto `run_agent`; state misassigned ("whether there is a tool call", which is the conditional edge's check); assumed edges carry the tool result (they carry no data — results go into state). Mapping given; the other two stops = more conditional edges into END.
+
+10. **CrewAI — "not sure"**; cue ladder rung 1 given (permission / parallel / reviewer + the refund agent; Day 3 planner→executor handoff: what arrives at B and what doesn't). Session paused before the answer.
+
+**Watch items confirmed by Part D:** question-embedding step in RAG (2 slips); "weights" for embedding (2 slips); tool result reaching the user directly (2 slips).
+
+**Resume here:** CrewAI answer (expected: **permission separation**; handoff loses context / errors propagate / who owns the step limit), then the last three terms — guardrail, logging/observability, evaluation (all Day 3 material; expected to go quickly). Memory and tool use were answered on 2026-09-22. Then the Pydantic AI 30-min cut, the decision + watch-items table, and the HTTP-path redraw (partly covered by item 2 today — a short redraw is enough).
 
 ---
 

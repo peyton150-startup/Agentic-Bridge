@@ -529,6 +529,27 @@ Standard given: mechanism, not restatement ("memory is so the agent remembers" �
 
 **Resume here:** Part D retry with those three cues, then the remaining ten terms (RAG, embedding, vector database, ReAct, Tree-of-Thought, LangGraph, CrewAI, guardrail, logging/observability, evaluation), then the readiness decision. Expect the mechanisms to be present and the *labels* to be the work: ask "describe the mechanism, then name it" rather than "define X".
 
+### 2026-09-23 / Final day plan (≈2 h before the program opens)
+
+Learner asked what to prioritise and what happens to the rest of the curriculum. Agreed plan:
+
+```text
+Part D vocabulary (+ Day 4 framework vocabulary map)   ~45 min   required
+Pydantic AI, 30-min cut (learner's request)            ~30 min   optional
+readiness decision + CMU watch-items table             ~15 min   required
+cold redraw of loop + HTTP path (Day 4 delayed retrieval) ~20 min
+```
+
+**Not done, deliberately (not skipped for lack of understanding):** Day 4 mini-capstone, mock lab, the full Pydantic AI unit (Trellis code trace), and Extension X. All are framework/build practice (priority items 6–7 in `CLAUDE.md`), outside the readiness decision, and can be picked up during the program if a topic makes one useful.
+
+### 2026-09-23 / Part D — reasoning loop
+
+**Delayed retrieval PASS.** Asked to list the loop's boxes cold, the day after: new_state → `while True` → max_steps → model proposal → model_error → `kind == final` (noted unprompted that found *and* not-found both end as final) → guard as the `if` condition: valid → tool, else → rejected observation → trace append → `step + 1` → max_steps checked at the top of the next pass. **Nothing missing, matches `run_agent` line for line** — the previous session needed four hints and a reference for the same drawing.
+
+One-sentence definition: said "a single call cannot call tools without the code, so the code defines the loop" — half right; the missing half was **feedback** (turn 2 reads turn 1's observation). Definition given: *code repeatedly asks the model for a next step, carries out allowed actions, and feeds each result back as an observation, until a stop condition fires.*
+
+**Resume here:** Part D item 2 (external tool/API call: steps from "code calls `lookup_postcode`" to "observation", plus the not-owned step and its implication), item 3 (agentic AI), then the remaining ten terms with the framework vocabulary map folded into LangGraph/CrewAI. Then the Pydantic AI 30-min cut, the decision + watch list, and the HTTP-path redraw.
+
 ---
 
 ## CMU Watch Items

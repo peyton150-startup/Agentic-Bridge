@@ -640,3 +640,36 @@ Pydantic AI 2.27.0 was already installed (no download). Syntax checked against t
 **Patch 7: PASS.**
 
 **Resume here:** optional — capture messages on a failed run (framework feature; check official docs), or return to the review hour (watch-list rapid fire Q2 onward, mini transfer, framework flash).
+
+### 2026-09-24 / Rapid-fire review, Day 0 → Day 3 (in progress)
+
+**Day 0**
+- Mutation vs rebinding (`notes.append` then `notes = [...]`): answered `['fresh','y']` → rung 1 (sticky notes) → `['a','x']` correct. Linked to why `state["trace"].append` works.
+- Structures: stack (undo) and queue (tickets) **correct cold — the Day 0 mix-up is fixed**; membership said list → set after the locker cue (confusion between *how often you ask* and *cost per ask*, clarified); id → rental said set → dict after cue.
+- LLM vs code (calendar assistant): **6/6 cold** (Day 0 vacuum was 4/6).
+- Sampling: "probabilistic… somewhat random with a focus on the general direction" + "nothing unchecked, so guards" — correct; better wording given (sampling from a distribution).
+- Loop order (`+1` before `break` before `print`): answered 3 passes, no numbers ("I started at 0") → asked to skip; answer given (`pass 1`, `pass 2`, `done 3`). **Small watch item: statement order inside a loop body** (a Day 0 slip, still present).
+
+**Day 1**
+- Valid JSON naming a real delete tool: principle correct (shape ≠ permission; rejected → recorded); missed the concrete checks — user allowed, rental deletable, **human approval for an irreversible delete** (learner: "I missed it needs human approval because it is a delete"), plus toolset absence.
+- Termination: three stops correct; success column not given; **said a timeout should stop the loop — watch item #1 again** → distinguished timeout fires (observation) vs no timeout set (hang, kind 5).
+- Trace in state: model half correct; "you" half needed a cue → evidence for diagnosis and evaluation after the run; printed text can't be checked by code.
+- Guard vs content (`"Agent"` vs key `"agent"`): correct — "the guard cannot check content". Learner asked whether to instruct the model to lower-case → instruction lowers frequency, code guarantees (Day 3 rule "if it can be an `if`…").
+- Model's two jobs: correct ("transcribe… then give an understandable message"); "never does" gave one (call a tool) → others listed.
+
+**Day 1B**
+- Before/after checks: input before — correct; after — gave shape and fields, **needed a cue for status 200 first**. Learner proposed checking field content is non-empty — a real gap in `lookup_postcode` (possible own edit).
+- Five failure kinds: **5/5 cold**, including the `else`-branch bug as `loop`.
+- 200 with `temp_f: -999`, `updated: 2019`: passes all checks — correct; -999 correct; called the date a format problem (it is **staleness**) and said code can't check it → shape / **plausibility** / truth layers taught.
+- Where the tool result goes: "to the model, then the user" — **watch item #2 held**; learner asked the order → tool → loop → model → loop → user (loop is the courier, twice).
+
+**Day 2**
+- RAG pipeline: merged chunking with embedding; framed retrieval as a tool the model asks code to run (new, good); **question-embedding step needed rung 2 — third slip, stays on the watch list**; same model answered after cue.
+- Retrieval vs generation: generation — correct; "I forgot" the how/fix → rung 1 → compared retrieved vs answered (correct), and independently named both Day 2 causes (training overrides chunk; two policy versions with no date). Code fix given (rules table; number-in-retrieved-text check).
+- Split chunk with k=1: "waived" + retrieval failure — **both correct cold**.
+- Classification: 2/5 — **rentals DB called memory, model-written note called context**; rider's "admin said" called context (label that matters: evidence). Learner asked what memory is: "what the model saves between turns to use as context later" → refined to between *sessions*; within a run that's state/trace.
+
+**Day 3**
+- Planning vs reflex (flight then hotel): "could go both ways" → applied the Day 3 criterion (2 dependent steps, choosable after seeing step 1) → reflex. Monitoring: "stop the loop and ask the user" → the error is an observation; monitoring notices the broken dependency and **replans** (retry, then honest answer); asking the user is a replanning outcome, not a forced stop.
+
+**Resume here:** Day 3 Q2 (pass criteria for an unanswered `cancel_rental` confirmation — expect: stopped at awaiting_approval, rental still active, zero cancellations), then Day 3 multi-agent and guardrail questions, then re-score the watch list (add: loop statement order; memory vs authoritative state).

@@ -608,4 +608,16 @@ Record only weaknesses that should receive extra attention during the program.
 
 **Written by tutor:** `code/postcode_agent.py` — `new_state` and the tool copied, new `fake_model`, demo of the prediction table. **`run_agent` is intentionally left blank for the learner to write from memory** — the file does not run until then.
 
-**Resume here:** learner writes `run_agent` in the marked gap (cue ladder if stuck, no paste), runs the demo against the Gate 3 table, then the post-patch checks (trace one path, explain each line, change one input, modify one behaviour, name one failure path). Then patch 2: the same agent in Pydantic AI with `FunctionModel`.
+**`run_agent` written by the learner** — said "otherwise I am lost" from a blank page → allowed to retype from `tiny_agent.py` (not paste) with each line labelled by its box (syntax recall is not the concept under test; the loop had been drawn cold twice). Asked to be told *what* was missing but not *how* to fix. First version: every box present and in order; 3 syntax problems (docstring indent, missing `:`, `return` outside the `if`) and 3 logic problems (body outside `while`; max_steps stop not recording `stop_reason`; **trace append and `step + 1` inside the `else` only**). All fixed by the learner in two passes.
+
+**Run matched Gate 3 exactly** (final_answer / 2 / expected sentences for 15213, 1521, 99999).
+
+**Post-patch checks — all done:**
+- Failure path (the `else` bug): observation dropped, step never moves, max_steps never fires → learner reached "as if nothing happened"; completed: same tool call forever, a real request each pass (hammering the vendor) → **failure kind 5**.
+- Changed input: `timeout=0.0001` — predicted network error, final_answer, answer; trace length "3 or 4" → revised to 2 after "does anything retry?". Did not know the keyword-argument syntax → two cues (the `def` line and the old `api_tool` demo call); **made the edit themselves**. Run matched.
+- **Watch item #1 seen in code for the first time:** a network failure travelled through the loop as an observation → trace → model → honest final answer.
+- Why 99999 changed (404 → network) but 1521 did not: "the check for invalid input comes before we even send out the request" — correct; added that the timeout fired before the 404 could arrive (which checkpoint is reached first decides the failure kind).
+
+**Patch 6: PASS.** Timeout restored to 5 by the learner.
+
+**Resume here:** Patch 7 — the same postcode agent in Pydantic AI with `FunctionModel` as the deterministic stub (install `pydantic-ai-slim` only with approval; syntax from current official docs, kept separate from the concepts).

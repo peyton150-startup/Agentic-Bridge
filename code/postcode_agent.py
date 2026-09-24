@@ -89,9 +89,31 @@ def fake_model(state):
 # and returns the state. A rejected proposal's observation should be a dict with
 # "rejected": True (fake_model checks for that key).
 
-
-
-
+def run_agent(request, max_steps):
+    """The loop. Code owns every decision about running tools and stopping."""
+    state= new_state(request, max_steps)
+    while True:
+        if state["step"] >= state["max_steps"]:
+            state["stop_reason"] = "max_steps"
+            return state
+        try:
+            proposal = fake_model(state)
+        except Exception as error:
+            state["stop_reason"] = "model_error"
+            state["trace"].append({"error": f"{type(error).__name__}: {error}", "step": state["step"]})
+            return state
+        if proposal["kind"] == "final":
+            state["trace"].append({"step": state["step"], "proposal": proposal, "observation": None})
+            state["stop_reason"] = "final_answer"
+            return state
+            
+        if proposal["tool"] == "lookup_postcode" and is_valid_postcode(proposal["code"]):
+            observation = lookup_postcode(proposal["code"], timeout = 5)
+        else:
+            observation = {"rejected": True, "code": proposal["code"], "reason": "isn't a valid 5-digit US postcode."}
+        state["trace"].append({"step": state["step"], "proposal": proposal, "observation": observation})
+        state["step"] = state["step"] + 1
+        
 # ---- Demo: your Gate 3 prediction table --------------------------------------
 
 if __name__ == "__main__":

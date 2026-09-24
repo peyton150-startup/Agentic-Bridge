@@ -29,7 +29,7 @@ def is_valid_postcode(code):
     return isinstance(code, str) and code.isdigit() and len(code) == 5
 
 
-def lookup_postcode(code, timeout=5):
+def lookup_postcode(code, timeout = 5):
     """GET one US postal code. Read-only. Returns one result per failure kind."""
     if not is_valid_postcode(code):
         return {"error": "invalid_input", "status": None, "reason": "exactly 5 digits required"}

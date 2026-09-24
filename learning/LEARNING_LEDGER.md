@@ -591,3 +591,21 @@ Record only weaknesses that should receive extra attention during the program.
 **Not done, deliberately:** Day 4 mini-capstone, mock lab, full Pydantic AI Trellis trace, Extension X, separate HTTP-path redraw (covered by Part D item 2 the same day).
 
 **Sprint complete.** Carry the watch-items table into the program.
+
+### 2026-09-24 / Post-sprint review hour → Patch 6 (postcode agent)
+
+**Review plan** (1 h): watch-list rapid fire, cold redraws, mini transfer, framework flash, re-score. **Rapid-fire Q1** (weather tool returns 503, step 2 of 5): said the loop **stops** and **nothing goes into the trace** — watch item #1 again. Rung 2 needed. **Root cause found by the learner:** "I was basing it off the api tool, I have no code to base this off of" — `api_tool.py` was never wired into a loop, so in the only external-API code they have run, an error *is* just returned and printed. The optional Day 1B wiring task is the likely fix for the recurring slip.
+
+**Learner asked to build it** "just like we did for both of those modules". Chose option A (new module with its own loop, same shape) over B (parameterised `run_agent`, which is what frameworks do); then chose a **self-contained file** (copies, no imports — trade-off explained: one copy vs two). Pydantic AI version agreed as patch 2 using `FunctionModel` as the deterministic stub (install needs approval; syntax from current official docs).
+
+**Gates:**
+1. Plain English — first said the network/response handling moves into the loop → corrected: it stays **inside the tool**; the loop only sees the returned dict; only the fake model is new. PASS.
+2. Contract — input and output both first answered at the **tool's level** (5-digit code; place details) → corrected to `run_agent`'s level (request + max_steps; the state). Learner asked "what is the model's job here?" → two jobs: decipher the request into a proposal, explain the observation to the user — restated correctly. Mutable state listed all keys → split fixed (request, max_steps) vs changing (step, trace, stop_reason). Authority: code — correct. Failure: loop continues, final answer — correct, then self-corrected "the error is the observation". PASS.
+3. Prediction — stop reason and trace length right for all three (15213 / 1521 / 99999); hedged on 99999 honestly → point: the loop's shape doesn't depend on the outcome, only the sentence does. PASS.
+4. Boundary — agreed.
+
+**Watch item added:** tool level vs agent level (input and output confused twice in one contract).
+
+**Written by tutor:** `code/postcode_agent.py` — `new_state` and the tool copied, new `fake_model`, demo of the prediction table. **`run_agent` is intentionally left blank for the learner to write from memory** — the file does not run until then.
+
+**Resume here:** learner writes `run_agent` in the marked gap (cue ladder if stuck, no paste), runs the demo against the Gate 3 table, then the post-patch checks (trace one path, explain each line, change one input, modify one behaviour, name one failure path). Then patch 2: the same agent in Pydantic AI with `FunctionModel`.

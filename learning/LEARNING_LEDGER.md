@@ -620,4 +620,23 @@ Record only weaknesses that should receive extra attention during the program.
 
 **Patch 6: PASS.** Timeout restored to 5 by the learner.
 
-**Resume here:** Patch 7 — the same postcode agent in Pydantic AI with `FunctionModel` as the deterministic stub (install `pydantic-ai-slim` only with approval; syntax from current official docs, kept separate from the concepts).
+### 2026-09-24 / Patch 7 — the postcode agent in Pydantic AI (`code/postcode_agent_pai.py`)
+
+Pydantic AI 2.27.0 was already installed (no download). Syntax checked against the official v2 docs; design prototyped in scratch before handing over. File imports the tool from `postcode_agent.py` (safe behind `__main__`) so the comparison is same tool, different loop. Deterministic stub: `FunctionModel(fake_model)`.
+
+**Prediction gate:** "everything inside the while loop will be Pydantic" — right except the guard; guard "goes in the tool function, that is where the code authority was in the diagram" — **correct, unprompted**. Budget replacement given: `UsageLimits(request_limit)`, which **raises** rather than returning a stop reason.
+
+**Learner wrote the registered tool `lookup`.** Questions on the way were the substance of the unit:
+- "Every tool will need its own checks — would we copy-paste?" → tool-specific vs cross-cutting checks; helper function for cross-cutting ones (rule of three; a forgotten copy is a security hole).
+- "The tool is in Pydantic, not the loop, or both?" / "you gave me a loop but no tool?" / "so we don't have a tool because Pydantic takes care of that call?" → three layers: model **decides**, framework **calls**, your function **is** the tool and holds the guard; `lookup_postcode` (the HTTP work) vs `lookup` (registered tool = guard + call).
+- "I'm not saying `proposal["tool"] == ...` inside lookup()" → the old `if` did two jobs; *is this a tool we have?* moved into the framework's registry, *is the input allowed?* stayed in the tool.
+- Stuck on syntax ("how do I write Pydantic AI?") → only one framework line (the decorator); the body is lines 110–113 of their own loop with `return`.
+- Mistakes (what-not-how): missing `:`, stale `proposal["code"]`, **no return** (fixed with one `return observation` covering both branches — good), hand-written 5-digit check → switched to `is_valid_postcode`, stray `]`.
+
+**Run: identical answers to `postcode_agent.py` for all three requests.**
+
+**Checks:** 4 messages vs trace of 2 — first listed tool result and "lookup's answer" as separate messages → corrected: one tool-result message; message 4 is the model's answer. Restated correctly: user → model, proposal ← model, tool result → model, answer ← model (the to/from rhythm). `max_steps=1` predicted exactly (max_steps / 0 / None). Taught from the run: our `except` **discards the evidence** that the hand-built loop kept at `max_steps` — only visible because the plain version was built first.
+
+**Patch 7: PASS.**
+
+**Resume here:** optional — capture messages on a failed run (framework feature; check official docs), or return to the review hour (watch-list rapid fire Q2 onward, mini transfer, framework flash).
